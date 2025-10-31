@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zahradao.cz — Vše pro vaši zahradu | AO ekosystém</title>
+  <meta name="description" content="Zahradao.cz — e‑shop, služby a magazín pro každého zahradníka. Inspirace, realizace, zavlažování, domky, nářadí i rostliny. Součást AO rodiny webů." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Přírodní paleta */
+      --green-700:#1f7a3e;
+      --green-600:#2e8b57; /* SeaGreen */
+      --green-500:#35a052;
+      --green-400:#4CAF50; /* akcent */
+      --green-300:#7bcf8a;
+      --green-200:#c6efcf;
+      --earth-600:#8d6e63; /* hnědý akcent */
+      --earth-200:#efebe9;
+      --ink:#111418;
+      --ink-2:#2c3137;
+      --muted:#5f6b76;
+      --bg:#f6f8f6;
+      --white:#fff;
+      --shadow:0 10px 25px rgba(20,45,20,.08);
+      --radius-xl:18px;
+      --radius-lg:14px;
+      --radius:10px;
+      --maxw:1200px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Montserrat",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.5;
+      letter-spacing:.1px;
+    }
+    a{color:var(--green-600);text-decoration:none}
+    a:hover{color:var(--green-700)}
+    .container{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+
+    /* Header */
+    header.site{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:saturate(160%) blur(10px);
+      background:rgba(246,248,246,.8);
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:44px;height:44px;border-radius:12px;
+      background: conic-gradient(from 180deg at 50% 50%, var(--green-300), var(--green-500), var(--green-400));
+      display:grid;place-items:center;box-shadow:var(--shadow);
+    }
+    .logo svg{width:26px;height:26px;fill:#fff}
+    .brand h1{font-size:1.2rem;margin:0;font-weight:800;letter-spacing:.2px}
+    .brand small{display:block;color:var(--muted);font-weight:500;margin-top:2px}
+
+    nav.primary{display:flex;align-items:center;gap:16px}
+    nav.primary a{padding:10px 12px;border-radius:10px;font-weight:600;color:var(--ink-2)}
+    nav.primary a.active, nav.primary a:hover{background:var(--white);box-shadow:var(--shadow);color:var(--green-700)}
+
+    .actions{display:flex;align-items:center;gap:10px}
+    .searchbar{position:relative}
+    .searchbar input{
+      width:300px;max-width:55vw;padding:12px 40px 12px 14px;border-radius:12px;border:1px solid rgba(0,0,0,.08);
+      background:#fff;box-shadow:var(--shadow);outline:none
+    }
+    .searchbar svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;opacity:.6}
+    .hamburger{display:none;border:0;background:transparent;padding:8px;border-radius:10px}
+    .hamburger svg{width:26px;height:26px}
+
+    /* AO switcher */
+    .ao-switch{display:flex;gap:8px;flex-wrap:wrap;padding:8px 0 16px}
+    .ao-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--white);box-shadow:var(--shadow);font-weight:600}
+    .ao-pill svg{width:16px;height:16px}
+
+    /* Hero */
+    .hero{position:relative;isolation:isolate;margin:18px 0;border-radius:var(--radius-xl);overflow:hidden;background:linear-gradient(135deg, #e7f8eb 0%, #f4fbf6 40%, #ffffff 100%)}
+    .hero-inner{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;padding:36px}
+    .hero h2{font-size:clamp(26px,3.5vw,44px);line-height:1.1;margin:0 0 8px;font-weight:800}
+    .hero p{margin:0 0 18px;color:var(--ink-2)}
+    .badges{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px}
+    .badge{background:var(--earth-200);color:var(--earth-600);padding:8px 12px;border-radius:999px;font-weight:700;font-size:.9rem}
+    .cta{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;font-weight:700;border:1px solid transparent;box-shadow:var(--shadow)}
+    .btn.primary{background:var(--green-600);color:#fff}
+    .btn.primary:hover{background:var(--green-700)}
+    .btn.ghost{background:#fff;color:var(--green-700);border-color:rgba(0,0,0,.06)}
+
+    .hero-card{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:18px;align-self:start}
+    .hero-card h3{margin:0 0 8px}
+    .filters{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .filters select,.filters input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff}
+    .filters .full{grid-column:1/-1}
+
+    /* Category tiles */
+    .section{margin:36px 0}
+    .section h3{margin:0 0 14px;font-size:1.4rem}
+    .grid{display:grid;gap:16px}
+    .grid.cols-4{grid-template-columns:repeat(4,1fr)}
+    .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+    .tile{position:relative;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:18px;overflow:hidden}
+    .tile .icon{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green-300),var(--green-500));margin-bottom:8px}
+    .tile h4{margin:4px 0 6px}
+    .tile p{margin:0;color:var(--muted)}
+
+    /* Cards */
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+    .card .media{height:160px;background:linear-gradient(135deg,#dff7e5,#f3fcf6)}
+    .card .body{padding:16px}
+    .price{font-weight:800;color:var(--green-700)}
+
+    /* Magazine */
+    .post{display:flex;gap:16px;background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+    .post .media{width:36%;min-height:150px;background:linear-gradient(135deg,#eaf9ef,#ffffff)}
+    .post .body{padding:16px}
+    .post .meta{font-size:.9rem;color:var(--muted)}
+
+    /* CTA band */
+    .cta-band{background:linear-gradient(90deg,var(--green-600),var(--green-500));color:#fff;border-radius:18px;box-shadow:var(--shadow);padding:24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .cta-band .btn{box-shadow:none}
+
+    /* Footer */
+    footer{margin-top:48px;background:#101512;color:#dfe6e1}
+    .footer{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:24px;padding:28px 0}
+    .footer h5{margin:0 0 12px;font-size:1rem;color:#e9f5ec}
+    .footer a{color:#dfe6e1;opacity:.9}
+    .subfooter{border-top:1px solid rgba(255,255,255,.08);padding:12px 0;color:#bcd0c5;font-size:.9rem;display:flex;align-items:center;justify-content:space-between}
+
+    /* Responsive */
+    @media (max-width: 1024px){
+      .hero-inner{grid-template-columns:1fr}
+      .cards{grid-template-columns:repeat(2,1fr)}
+      .grid.cols-4{grid-template-columns:repeat(2,1fr)}
+      .footer{grid-template-columns:1fr 1fr 1fr}
+      .searchbar input{width:220px}
+    }
+    @media (max-width: 720px){
+      nav.primary{display:none}
+      .hamburger{display:inline-flex}
+      .cards{grid-template-columns:1fr}
+      .grid.cols-4,.grid.cols-3{grid-template-columns:1fr}
+      .post{flex-direction:column}
+      .post .media{width:100%}
+      .footer{grid-template-columns:1fr 1fr}
+    }
+
+    /* Mobile drawer */
+    .drawer{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none}
+    .drawer.open{display:block}
+    .drawer .panel{position:absolute;right:0;top:0;height:100%;width:min(86vw,360px);background:#fff;padding:14px;box-shadow:var(--shadow)}
+    .drawer .panel a{display:block;padding:12px;border-radius:10px;font-weight:700;color:var(--ink-2)}
+    .drawer .panel a:hover{background:var(--bg)}
+  </style>
+</head>
+<body>
+  <header class="site">
+    <div class="container topbar">
+      <div class="brand">
+        <div class="logo" aria-label="Logo Zahradao">
+          <!-- List stylizované "O" -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2zm0 3.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13z"/></svg>
+        </div>
+        <div>
+          <h1>Zahradao.cz</h1>
+          <small>Vše pro vaši zahradu — e‑shop • služby • magazín</small>
+        </div>
+      </div>
+      <nav class="primary" aria-label="Hlavní navigace">
+        <a href="#" class="active">Domů</a>
+        <a href="#kategorie">Kategorie</a>
+        <a href="#sluzby">Služby</a>
+        <a href="#produkty">Produkty</a>
+        <a href="#magazin">Magazín</a>
+        <a href="#kontakt">Kontakt</a>
+      </nav>
+      <div class="actions">
+        <div class="searchbar" role="search">
+          <input type="search" placeholder="Hledat: rostliny, závlaha, domky…" aria-label="Hledat" />
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        </div>
+        <button class="hamburger" aria-label="Menu" aria-controls="mobile-drawer" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="container">
+      <div class="ao-switch" aria-label="AO ekosystém">
+        <a class="ao-pill" href="#"><svg viewBox="0 0 24 24"><path d="M12 2l9 4-9 4-9-4 9-4zm0 7l9 4-9 4-9-4 9-4zm0 8l9 4-9 4-9-4 9-4z"/></svg> AO Rodina</a>
+        <a class="ao-pill" href="#">Farmao</a>
+        <a class="ao-pill" href="#">CZBeton</a>
+        <a class="ao-pill" href="#">Pujcovnao</a>
+        <a class="ao-pill" href="#">Firmao</a>
+        <a class="ao-pill" href="#">StartAO</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="container hero" id="uvod">
+      <div class="hero-inner">
+        <div>
+          <div class="badges">
+            <span class="badge">Novinky 2025</span>
+            <span class="badge">Doprava nad 1 999 Kč zdarma</span>
+            <span class="badge">Realizace na klíč</span>
+          </div>
+          <h2>Postavíme, zasadíme, zavlažíme. <br/>Zahrada, která roste s vámi.</h2>
+          <p>Od semínka po pergolu. Vyberte si z tisíců produktů a služeb — nebo nám napište a navrhneme řešení na míru.</p>
+          <div class="cta">
+            <a class="btn primary" href="#produkty">
+              <!-- list icon -->
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#fff" d="M9 16.2l-3.5-3.5 1.4-1.4L9 13.4l7.1-7.1 1.4 1.41z"/></svg>
+              Prohlédnout nabídku
+            </a>
+            <a class="btn ghost" href="#sluzby">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14h-2v-2h2v2zm0-4h-2V6h2v6z"/></svg>
+              Nezávazná poptávka
+            </a>
+          </div>
+        </div>
+        <aside class="hero-card" aria-label="Rychlý filtr">
+          <h3>Rychlý filtr</h3>
+          <div class="filters">
+            <select aria-label="Kategorie">
+              <option>Kategorie</option>
+              <option>Rostliny</option>
+              <option>Zavlažování</option>
+              <option>Zahradní domky</option>
+              <option>Nářadí</option>
+            </select>
+            <select aria-label="Rozpočet">
+              <option>Rozpočet</option>
+              <option>do 2 000 Kč</option>
+              <option>2–10 tis. Kč</option>
+              <option>10–50 tis. Kč</option>
+              <option>50+ tis. Kč</option>
+            </select>
+            <input class="full" type="text" placeholder="Zadejte potřebu: např. pergola 3×5 m" aria-label="Potřeba" />
+            <button class="btn primary full" type="button">Vyhledat</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="container section" id="kategorie">
+      <h3>Hlavní kategorie</h3>
+      <div class="grid cols-4">
+        <article class="tile">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2l3 7h7l-5.5 4 2 7-6.5-4.5L5.5 20l2-7L2 9h7z"/></svg></div>
+          <h4>Rostliny a semena</h4>
+          <p>Trvalky, bylinky, zelenina, ovocné stromky.</p>
+        </article>
+        <article class="tile">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#fff" d="M7 2h10v2H7zM5 6h14v2H5zM3 10h18v2H3zM5 14h14v2H5zM7 18h10v2H7z"/></svg></div>
+          <h4>Zavlažování</h4>
+          <p>Automatické závlahy, hadice, čerpadla.</p>
+        </article>
+        <article class="tile">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#fff" d="M12 3l9 4v10l-9 4-9-4V7l9-4zm0 2.2L6 7.5v9l6 2.7 6-2.7v-9l-6-2.3z"/></svg></div>
+          <h4>Zahradní domky & pergoly</h4>
+          <p>Domky, pergoly, sklady, modulární řešení.</p>
+        </article>
+        <article class="tile">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#fff" d="M7 13h10v2H7zm0-4h10v2H7zm0 8h10v2H7z"/></svg></div>
+          <h4>Nářadí a technika</h4>
+          <p>Sekačky, křovinořezy, nářadí pro každého.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="container section" id="sluzby">
+      <h3>Oblíbené služby</h3>
+      <div class="cards">
+        <article class="card">
+          <div class="media" role="img" aria-label="Návrh zahrady – ilustrace"></div>
+          <div class="body">
+            <h4>Návrh a vizualizace zahrady</h4>
+            <p>3D návrh, výběr rostlin a materiálů, harmonogram výsadby. Od <span class="price">6 990 Kč</span>.</p>
+            <a href="#" class="btn ghost">Poptat</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="media" role="img" aria-label="Automatická závlaha – ilustrace"></div>
+          <div class="body">
+            <h4>Instalace automatické závlahy</h4>
+            <p>Návrh zón, montáž, zprovoznění a údržba. Od <span class="price">14 900 Kč</span>.</p>
+            <a href="#" class="btn ghost">Poptat</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="media" role="img" aria-label="Zahradní domek – ilustrace"></div>
+          <div class="body">
+            <h4>Montáž zahradního domku / pergoly</h4>
+            <p>Projekt, betonové patky, montáž konstrukce. Od <span class="price">24 900 Kč</span>.</p>
+            <a href="#" class="btn ghost">Poptat</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="container section" id="produkty">
+      <h3>Tipy z nabídky</h3>
+      <div class="cards">
+        <article class="card">
+          <div class="media" role="img" aria-label="Sazenice rajčat – ilustrace"></div>
+          <div class="body">
+            <h4>Sazenice rajčat „AO Cherry“</h4>
+            <p>Kompaktní růst, vysoká plodnost. 
+              <strong class="price">89 Kč</strong>
+            </p>
+            <a href="#" class="btn primary">Do košíku</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="media" role="img" aria-label="Sada zavlažování – ilustrace"></div>
+          <div class="body">
+            <h4>Sada kapkové závlahy 25 m</h4>
+            <p>Úspora vody až 60 %. 
+              <strong class="price">1 290 Kč</strong>
+            </p>
+            <a href="#" class="btn primary">Do košíku</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="media" role="img" aria-label="Zahradní domek – ilustrace"></div>
+          <div class="body">
+            <h4>Zahradní domek 3×3 m „Borneo“</h4>
+            <p>Masivní konstrukce, přírodní vzhled. 
+              <strong class="price">34 990 Kč</strong>
+            </p>
+            <a href="#" class="btn primary">Do košíku</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="container section" id="magazin">
+      <h3>Magazín a návody</h3>
+      <article class="post">
+        <div class="media" role="img" aria-label="Údržba trávníku – ilustrace"></div>
+        <div class="body">
+          <h4>Jak na trávník: jarní start krok za krokem</h4>
+          <p class="meta">Článek • 7 min čtení • Tipy a triky</p>
+          <p>Vertikulace, dosev, hnojení i zavlažování. Kompletní plán, který zvládnete za víkend.</p>
+          <a class="btn ghost" href="#">Číst</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="container section">
+      <div class="cta-band">
+        <div>
+          <h3 style="margin:0 0 6px">Poptat řešení na míru</h3>
+          <p style="margin:0">Popište své plány — do 24 hodin připravíme návrh a rozpočet.</p>
+        </div>
+        <a class="btn" style="background:#fff;color:var(--green-700)" href="#kontakt">Odeslat poptávku</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer">
+      <div>
+        <h5>O Zahradao.cz</h5>
+        <p>Součást AO ekosystému. Propojíme vás s produkty, službami i odborníky, aby vaše zahrada byla radost.</p>
+      </div>
+      <div>
+        <h5>Kategorie</h5>
+        <nav>
+          <a href="#">Rostliny</a><br>
+          <a href="#">Zavlažování</a><br>
+          <a href="#">Domky & pergoly</a><br>
+          <a href="#">Nářadí</a>
+        </nav>
+      </div>
+      <div>
+        <h5>Služby</h5>
+        <nav>
+          <a href="#">Návrh a realizace</a><br>
+          <a href="#">Závlahy</a><br>
+          <a href="#">Montáže</a>
+        </nav>
+      </div>
+      <div>
+        <h5>Kontakt</h5>
+        <nav>
+          <a href="#">E‑mail</a><br>
+          <a href="#">Telefon</a><br>
+          <a href="#">Sociální sítě</a>
+        </nav>
+      </div>
+    </div>
+    <div class="container subfooter">
+      <div>© <span id="y"></span> Zahradao.cz • AO Group</div>
+      <div><a href="#">Obchodní podmínky</a> • <a href="#">GDPR</a></div>
+    </div>
+  </footer>
+
+  <div class="drawer" id="mobile-drawer" aria-hidden="true">
+    <div class="panel" role="dialog" aria-label="Mobilní menu">
+      <a href="#">Domů</a>
+      <a href="#kategorie">Kategorie</a>
+      <a href="#sluzby">Služby</a>
+      <a href="#produkty">Produkty</a>
+      <a href="#magazin">Magazín</a>
+      <a href="#kontakt">Kontakt</a>
+    </div>
+  </div>
+
+  <script>
+    // Rok v patičce
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Mobilní menu
+    const burger = document.querySelector('.hamburger');
+    const drawer = document.getElementById('mobile-drawer');
+    const toggleDrawer = () => {
+      const open = !drawer.classList.contains('open');
+      drawer.classList.toggle('open', open);
+      burger.setAttribute('aria-expanded', String(open));
+      drawer.setAttribute('aria-hidden', String(!open));
+    };
+    burger.addEventListener('click', toggleDrawer);
+    drawer.addEventListener('click', (e)=>{ if(e.target===drawer) toggleDrawer(); });
+  </script>
+</body>
+</html>
