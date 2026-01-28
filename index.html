@@ -919,5 +919,236 @@
     if (views.includes(hash)) switchView(hash);
     else switchView("home");
   </script>
+  <script>
+  // ... (tvůj existující JS)
+
+  // ---------- Product variants (demo) ----------
+  const productVariants = {
+    v1: { label: "120–160 cm", price: 1290, stock: 24, heightNow: "120–160 cm" },
+    v2: { label: "160–200 cm", price: 1790, stock: 12, heightNow: "160–200 cm" },
+    v3: { label: "200+ cm",     price: 2490, stock: 5,  heightNow: "200+ cm" }
+  };
+
+  function formatCZK(n) {
+    // 1290 -> "1 290 Kč"
+    const s = String(Math.round(n));
+    const spaced = s.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return spaced + " Kč";
+  }
+
+  function setVariantActive(key) {
+    const v = productVariants[key] || productVariants.v1;
+
+    const uiPrice = $("#uiPrice");
+    const uiStock = $("#uiStock");
+    const uiHeightNow = $("#uiHeightNow");
+
+    if (uiPrice) uiPrice.textContent = formatCZK(v.price);
+    if (uiStock) uiStock.textContent = `Skladem: ${v.stock} ks`;
+    if (uiHeightNow) uiHeightNow.textContent = v.heightNow;
+
+    // highlight selected button
+    $$(".variantBtn").forEach(btn => {
+      const active = btn.getAttribute("data-variant") === key;
+      btn.classList.toggle("bg-zinc-900", active);
+      btn.classList.toggle("text-white", active);
+      btn.classList.toggle("dark:bg-white", active);
+      btn.classList.toggle("dark:text-zinc-950", active);
+
+      // keep borders readable
+      btn.classList.toggle("border-zinc-900/20", active);
+      btn.classList.toggle("dark:border-white/20", active);
+    });
+  }
+
+  function initVariants() {
+    const buttons = $$(".variantBtn");
+    if (!buttons.length) return;
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-variant");
+        setVariantActive(key);
+      });
+    });
+
+    setVariantActive("v1"); // default
+  }
+
+  // ---------- Planner generator (demo) ----------
+  function buildPlanCard(plan) {
+    return `
+      <div class="p-6 rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-xs text-zinc-600 dark:text-zinc-400">${plan.tag}</div>
+            <div class="mt-1 text-lg font-semibold tracking-tight">${plan.title}</div>
+            <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">${plan.desc}</div>
+          </div>
+          <div class="text-xs px-2 py-1 rounded-full border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+            ${plan.careLabel}
+          </div>
+        </div>
+
+        <div class="mt-4 grid sm:grid-cols-2 gap-3">
+          <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5">
+            <div class="text-xs text-zinc-600 dark:text-zinc-400">Sestava</div>
+            <div class="mt-1 text-sm font-semibold">${plan.set}</div>
+          </div>
+          <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5">
+            <div class="text-xs text-zinc-600 dark:text-zinc-400">Budoucnost</div>
+            <div class="mt-1 text-sm font-semibold">${plan.future}</div>
+          </div>
+        </div>
+
+        <div class="mt-4 p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-gradient-to-r from-emerald-500/10 to-lime-400/10">
+          <div class="text-sm font-semibold">Proč to funguje</div>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">${plan.why}</div>
+        </div>
+
+        <div class="mt-4 flex gap-2 flex-wrap">
+          <button class="px-3 py-2 rounded-xl text-sm font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:opacity-90 transition"
+                  onclick="switchView('product')">
+            Detail stromu
+          </button>
+          <button class="px-3 py-2 rounded-xl text-sm font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                  onclick="alert('Demo: později se přidá do digitální zahrady a vznikne plán rozmístění.')">
+            Přidat do digitální zahrady
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function generatePlans(input) {
+    const sizeMap = { S: "malá zahrada", M: "střední zahrada", L: "velká zahrada" };
+    const careMap = {
+      low: { label: "Low-care", txt: "15–25 min / týden" },
+      mid: { label: "Střední péče", txt: "30–60 min / týden" },
+      high:{ label: "Vysoká péče", txt: "1–2 h / týden" }
+    };
+    const goalMap = {
+      privacy: { title: "Soukromí", vibe: "zelená stěna + klid" },
+      fruit:   { title: "Ovoce", vibe: "jedlé + užitek" },
+      design:  { title: "Design", vibe: "linie + čistota" },
+      calm:    { title: "Klid", vibe: "měkké tvary + relax" }
+    };
+
+    const care = careMap[input.care] || careMap.low;
+    const goal = goalMap[input.goal] || goalMap.privacy;
+    const sizeTxt = sizeMap[input.size] || "střední zahrada";
+
+    // 7 řešení (demo “engine” – později napojíš na databázi)
+    const base = [
+      {
+        tag: "TOP volba",
+        title: `„${goal.title} u terasy“`,
+        desc: `Ideální pro ${sizeTxt}. Funguje i pro laiky — žádný chaos, jen jistota.`,
+        set: "2× sloupovitý habr + podrost trvalek + mulč",
+        future: "5 let: stěna • 10 let: pokoj • 20 let: dominanta",
+        why: "Roste předvídatelně, drží tvar, dá se snadno udržovat řezem."
+      },
+      {
+        tag: "Rychlý efekt",
+        title: `„Rychlé zahuštění“`,
+        desc: "Varianta, která rychle udělá objem a pocit hotové zahrady.",
+        set: "keře + trávy + mulč + kapkovka",
+        future: "1–3 roky: plnost • 5 let: stabilita",
+        why: "Kombinace nízké údržby a rychlého vizuálního výsledku."
+      },
+      {
+        tag: "Moderní linie",
+        title: `„Čistá struktura“`,
+        desc: "Designově čisté řešení — linie, rytmus, minimum kýče.",
+        set: "sloupovité dřeviny + okrasné trávy",
+        future: "5 let: jasná kompozice • 10 let: prémiový look",
+        why: "Minimalismus, který vypadá draze a vydrží roky."
+      },
+      {
+        tag: "Rodinná bezpečnost",
+        title: `„Bezpečno pro děti / psa“`,
+        desc: "Všechny prvky jsou volené s ohledem na bezpečí a jednoduchost.",
+        set: "bez trnů + neagresivní kořeny + stabilní druhy",
+        future: "stabilní růst bez překvapení",
+        why: "Nižší rizika, méně starostí, větší klid."
+      },
+      {
+        tag: "Regionální jistota",
+        title: `„Dává smysl v regionu“`,
+        desc: "Volba se přizpůsobí teplotě/suchu – demo logika (později data).",
+        set: "odolnější druhy + chytrá zálivka",
+        future: "lepší přežití v extrémech",
+        why: "Méně zklamání a reklamací – realita prodeje živých produktů."
+      },
+      {
+        tag: "Low-care vítěz",
+        title: `„Minimum práce“`,
+        desc: "Nejvíc muziky za nejméně práce. Ideální pro vytížené.",
+        set: "mulč + kapkovka + odolné trvalky",
+        future: "dlouhodobě stabilní bez dření",
+        why: "Systém péče je jednodušší než u „náhodných nákupů“."
+      },
+      {
+        tag: "Prémiová zahrada",
+        title: `„Ferrari look“`,
+        desc: "Vypadá draze, klidně, čistě. Přesně ten vibe, co chceš.",
+        set: "dominantní strom + struktura + jemné vrstvy",
+        future: "10 let: wow • 20 let: podpisový styl",
+        why: "Kompozice je navržená jako design produktu, ne jako katalog."
+      }
+    ].map(p => ({
+      ...p,
+      careLabel: `${care.label} • ${care.txt}`
+    }));
+
+    // drobná personalizace podle vstupů (demo)
+    if (input.goal === "fruit") {
+      base[0].set = "2× ovocný strom + podrost bylin + mulč";
+      base[0].why = "Získáš užitek (ovoce) a pořád držíš design a jednoduchost.";
+    }
+    if (input.goal === "calm") {
+      base[2].desc = "Měkké vrstvení, klidné tvary, žádný vizuální šum.";
+    }
+    if (input.safe === "family") {
+      base[3].desc = "Vynecháváme rizikové/nevhodné druhy. Čistá, bezpečná volba.";
+    }
+    if (input.size === "S") {
+      base[6].desc = "Luxus i na malé zahradě — kompaktní, ale wow.";
+    }
+
+    return base;
+  }
+
+  function initPlannerGenerator() {
+    const btn = $("#btnGeneratePlans");
+    const out = $("#plannerResults");
+    if (!btn || !out) return;
+
+    btn.addEventListener("click", () => {
+      const input = {
+        size: $("#inSize")?.value || "M",
+        care: $("#inCare")?.value || "low",
+        goal: $("#inGoal")?.value || "privacy",
+        safe: $("#inSafe")?.value || "family",
+        region: $("#inRegion")?.value || "cz_all",
+      };
+
+      const plans = generatePlans(input);
+      out.innerHTML = plans.map(buildPlanCard).join("");
+
+      // jemný scroll na výsledky
+      setTimeout(() => {
+        const y = out.getBoundingClientRect().top + window.scrollY - 90;
+        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+      }, 50);
+    });
+  }
+
+  // ---------- Hook into existing init ----------
+  // zavolej po initTheme / switchView startu (nevadí, když se zavolá i když nejsi na daném view)
+  initVariants();
+  initPlannerGenerator();
+</script>
+
 </body>
 </html>
