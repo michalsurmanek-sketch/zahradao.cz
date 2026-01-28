@@ -620,6 +620,71 @@
               <div class="mt-1 font-semibold">AR & AI</div>
               <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">Náhled na pozemek + automatické rozvržení.</div>
             </div>
+            <div class="mt-4 p-5 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+  <div class="flex items-center justify-between gap-3 flex-wrap">
+    <div>
+      <div class="text-xs text-zinc-600 dark:text-zinc-400">Parametry (demo)</div>
+      <div class="text-sm font-semibold">Vyplň a vygeneruj 7 řešení</div>
+    </div>
+    <button id="btnGeneratePlans" class="px-4 py-2 rounded-xl text-sm font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:opacity-90 transition shadow-soft">
+      Vygenerovat řešení
+    </button>
+  </div>
+
+  <div class="mt-4 grid sm:grid-cols-2 gap-3">
+    <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+      <div class="text-xs text-zinc-600 dark:text-zinc-400">Velikost zahrady</div>
+      <select id="inSize" class="mt-2 w-full px-3 py-2 rounded-xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40">
+        <option value="S">Malá (do 200 m²)</option>
+        <option value="M" selected>Střední (200–600 m²)</option>
+        <option value="L">Velká (600+ m²)</option>
+      </select>
+    </div>
+
+    <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+      <div class="text-xs text-zinc-600 dark:text-zinc-400">Čas na péči</div>
+      <select id="inCare" class="mt-2 w-full px-3 py-2 rounded-xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40">
+        <option value="low" selected>Low-care (15–25 min / týden)</option>
+        <option value="mid">Střední (30–60 min / týden)</option>
+        <option value="high">Vysoká (1–2 h / týden)</option>
+      </select>
+    </div>
+
+    <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+      <div class="text-xs text-zinc-600 dark:text-zinc-400">Cíl zahrady</div>
+      <select id="inGoal" class="mt-2 w-full px-3 py-2 rounded-xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40">
+        <option value="privacy" selected>Soukromí</option>
+        <option value="fruit">Ovoce / jedlé</option>
+        <option value="design">Design / moderní struktura</option>
+        <option value="calm">Klid / relax</option>
+      </select>
+    </div>
+
+    <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+      <div class="text-xs text-zinc-600 dark:text-zinc-400">Bezpečnost</div>
+      <select id="inSafe" class="mt-2 w-full px-3 py-2 rounded-xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40">
+        <option value="family" selected>Děti / pes</option>
+        <option value="none">Bez omezení</option>
+      </select>
+    </div>
+
+    <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 sm:col-span-2">
+      <div class="text-xs text-zinc-600 dark:text-zinc-400">Region (demo)</div>
+      <select id="inRegion" class="mt-2 w-full px-3 py-2 rounded-xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40">
+        <option value="cz_all" selected>ČR – obecně</option>
+        <option value="south">Jih / tepleji</option>
+        <option value="north">Sever / chladněji</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="mt-4 text-xs text-zinc-600 dark:text-zinc-400">
+    * Demo výstup: později se napojí na reálná data, sklad, pěstitele a pravidla péče.
+  </div>
+</div>
+
+<div id="plannerResults" class="mt-4 grid lg:grid-cols-2 gap-4"></div>
+
           </div>
         </div>
 
