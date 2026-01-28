@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="cs" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zahradao.cz — Digitální zahrada budoucnosti</title>
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          boxShadow: {
+            soft: '0 18px 60px rgba(0,0,0,.12)',
+            glow: '0 0 0 1px rgba(255,255,255,.08), 0 18px 60px rgba(0,0,0,.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root { color-scheme: light; }
+    html.dark { color-scheme: dark; }
+
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+    /* Soft grain */
+    .grain:before{
+      content:"";
+      position:absolute; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      opacity:.08; pointer-events:none; mix-blend-mode:overlay;
+    }
+
+    /* Scrollbar (subtle) */
+    *::-webkit-scrollbar{ height:10px; width:10px; }
+    *::-webkit-scrollbar-thumb{ background: rgba(120,120,120,.25); border-radius: 999px; }
+    *::-webkit-scrollbar-track{ background: transparent; }
+
+    /* Range styles */
+    input[type="range"] { accent-color: currentColor; }
+  </style>
+</head>
+
+<body class="h-full bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
+  <!-- Ambient background -->
+  <div class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-24 -left-24 h-96 w-96 rounded-full blur-3xl opacity-40 dark:opacity-35 bg-emerald-400"></div>
+    <div class="absolute top-20 -right-24 h-[34rem] w-[34rem] rounded-full blur-3xl opacity-35 dark:opacity-30 bg-lime-300"></div>
+    <div class="absolute -bottom-32 left-1/3 h-[30rem] w-[30rem] rounded-full blur-3xl opacity-25 dark:opacity-25 bg-cyan-300"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-white/70 dark:via-zinc-950/20 dark:to-zinc-950"></div>
+  </div>
+
+  <!-- Top bar -->
+  <header class="sticky top-0 z-50 border-b border-zinc-200/70 dark:border-white/10 backdrop-blur-xl bg-white/60 dark:bg-zinc-950/40">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="flex items-center justify-between py-3">
+        <!-- Brand -->
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 grid place-items-center shadow-soft">
+            <span class="text-sm font-bold tracking-tight">ZA</span>
+          </div>
+          <div class="leading-tight">
+            <div class="font-semibold tracking-tight">Zahradao.cz</div>
+            <div class="text-xs text-zinc-600 dark:text-zinc-400">Digitální zahrada budoucnosti</div>
+          </div>
+        </div>
+
+        <!-- Nav -->
+        <nav class="hidden md:flex items-center gap-2">
+          <button data-view="home" class="navBtn px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Domů
+          </button>
+          <button data-view="product" class="navBtn px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Ukázka produktu
+          </button>
+          <button data-view="planner" class="navBtn px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Průvodce výběrem
+          </button>
+          <button data-view="pricing" class="navBtn px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Předplatné
+          </button>
+        </nav>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2">
+          <button id="toggleTheme" class="px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Režim: <span id="themeLabel">Světlý</span>
+          </button>
+          <button id="openPlanner" class="hidden sm:inline-flex px-4 py-2 rounded-xl text-sm font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:opacity-90 transition shadow-soft">
+            Začít výběr
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12">
+    <!-- HOME VIEW -->
+    <section id="view-home" class="view">
+      <!-- Hero -->
+      <div class="relative overflow-hidden rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft grain">
+        <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-lime-400/10 to-cyan-400/10"></div>
+
+        <div class="relative p-6 sm:p-10 lg:p-12">
+          <div class="grid lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7">
+              <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 text-xs font-medium text-zinc-700 dark:text-zinc-200">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                Výběr rostlin jako Apple produkt — klid, jistota, budoucnost
+              </div>
+
+              <h1 class="mt-4 text-3xl sm:text-5xl font-semibold tracking-tight">
+                Strom není položka.
+                <span class="block text-zinc-600 dark:text-zinc-300">Je to budoucnost tvé zahrady.</span>
+              </h1>
+
+              <p class="mt-4 text-base sm:text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed max-w-2xl">
+                Zahradao.cz je <span class="font-medium">operační systém pro zahradu</span>.
+                Řekneš nám velikost pozemku, region a čas na péči — my sestavíme výběr, který dává smysl
+                <span class="font-medium">dnes i za 10–20 let</span>.
+              </p>
+
+              <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                <button class="px-5 py-3 rounded-2xl font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:opacity-90 transition shadow-soft"
+                        onclick="openPlanner()">
+                  Spustit chytrý výběr
+                </button>
+                <button class="px-5 py-3 rounded-2xl font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                        onclick="switchView('product')">
+                  Podívat se na produktovou stránku
+                </button>
+              </div>
+
+              <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-xs text-zinc-600 dark:text-zinc-400">Jistota výběru</div>
+                  <div class="mt-1 font-semibold">pro laiky</div>
+                </div>
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-xs text-zinc-600 dark:text-zinc-400">Růst v čase</div>
+                  <div class="mt-1 font-semibold">5 / 10 / 20 let</div>
+                </div>
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-xs text-zinc-600 dark:text-zinc-400">Bezpečnost</div>
+                  <div class="mt-1 font-semibold">děti / pes</div>
+                </div>
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-xs text-zinc-600 dark:text-zinc-400">Kořeny & rizika</div>
+                  <div class="mt-1 font-semibold">dům / plot / sítě</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hero right visual -->
+            <div class="lg:col-span-5">
+              <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+                <div class="p-5 border-b border-zinc-200/70 dark:border-white/10 flex items-center justify-between">
+                  <div>
+                    <div class="text-xs text-zinc-600 dark:text-zinc-400">Digitální zahrada</div>
+                    <div class="font-semibold">Moje budoucnost</div>
+                  </div>
+                  <div class="text-xs px-2 py-1 rounded-full border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                    AR / AI / Plán
+                  </div>
+                </div>
+
+                <div class="p-5 space-y-4">
+                  <div class="p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-lime-400/10 border border-zinc-200/60 dark:border-white/10">
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <div class="text-sm font-semibold">Soukromí u terasy</div>
+                        <div class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
+                          Doporučeno: 2× sloupovitý habr + podrost (trvalky)
+                        </div>
+                      </div>
+                      <div class="text-xs font-medium text-zinc-700 dark:text-zinc-200">Plán</div>
+                    </div>
+                    <div class="mt-3 flex items-center gap-2">
+                      <div class="h-2 flex-1 rounded-full bg-zinc-200/70 dark:bg-white/10 overflow-hidden">
+                        <div class="h-2 w-[65%] rounded-full bg-zinc-900/60 dark:bg-white/50"></div>
+                      </div>
+                      <div class="text-xs text-zinc-600 dark:text-zinc-400">65%</div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                      <div class="text-xs text-zinc-600 dark:text-zinc-400">Nejbližší úkol</div>
+                      <div class="mt-1 font-semibold">Řez (únor)</div>
+                      <div class="mt-2 text-xs text-zinc-600 dark:text-zinc-400">Přijde notifikace</div>
+                    </div>
+                    <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                      <div class="text-xs text-zinc-600 dark:text-zinc-400">Režim péče</div>
+                      <div class="mt-1 font-semibold">Low-care</div>
+                      <div class="mt-2 text-xs text-zinc-600 dark:text-zinc-400">15–25 min / týden</div>
+                    </div>
+                  </div>
+
+                  <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <div class="text-xs text-zinc-600 dark:text-zinc-400">Růstový náhled</div>
+                        <div class="font-semibold">Tvoje zahrada za 10 let</div>
+                      </div>
+                      <button class="text-xs px-3 py-2 rounded-xl border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                              onclick="switchView('product')">
+                        Detail stromu
+                      </button>
+                    </div>
+                    <div class="mt-3 h-28 rounded-2xl bg-gradient-to-br from-zinc-900/5 to-emerald-500/10 dark:from-white/5 dark:to-emerald-500/10 border border-zinc-200/50 dark:border-white/10 flex items-center justify-center">
+                      <div class="text-xs text-zinc-600 dark:text-zinc-400">Vizuální simulace (demo)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 text-xs text-zinc-600 dark:text-zinc-400">
+                * Toto je funkční prototyp. Data se později napojí na sklad, pěstitele, logistiku a „digitální zahradu“.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature grid -->
+      <div class="mt-10 grid lg:grid-cols-3 gap-4">
+        <div class="p-6 rounded-[1.75rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft">
+          <div class="text-sm font-semibold">Výběr místo filtrů</div>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+            Zahradao se ptá za tebe. Výstupem nejsou „tisíce položek“, ale <span class="font-medium">7 ideálních řešení</span>.
+          </div>
+          <div class="mt-4 flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+            <span class="h-2 w-2 rounded-full bg-emerald-500"></span> Velikost • Region • Péče • Děti/Zvířata
+          </div>
+        </div>
+
+        <div class="p-6 rounded-[1.75rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft">
+          <div class="text-sm font-semibold">Produktová stránka jako encyklopedie</div>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+            Kořeny, rizika, růst, sezóny, kombinace, bezpečnost. Všechno v klidu, krásně, pochopitelně.
+          </div>
+          <div class="mt-4 inline-flex text-xs px-3 py-1.5 rounded-full border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+            „Tohle chci mít na zahradě.“
+          </div>
+        </div>
+
+        <div class="p-6 rounded-[1.75rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft">
+          <div class="text-sm font-semibold">Digitální zahrada</div>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+            Uložené rostliny, růstová osa, připomínky, plán péče. Zahrada se chová jako „živý projekt“.
+          </div>
+          <div class="mt-4 flex gap-2">
+            <span class="text-xs px-3 py-1.5 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">AI poradce</span>
+            <span class="text-xs px-3 py-1.5 rounded-full border border-zinc-200/70 dark:border-white/10">AR náhled</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="mt-10 rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-glow overflow-hidden">
+        <div class="p-8 sm:p-10 grid lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-8">
+            <div class="text-xs opacity-80">Začni během 60 sekund</div>
+            <div class="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight">
+              Dej nám parametry zahrady. Dostaneš sestavu, kterou budeš milovat i za 10 let.
+            </div>
+            <div class="mt-2 text-sm opacity-80">
+              Výstup: doporučené stromy + rostliny + plán rozmístění + režim péče.
+            </div>
+          </div>
+          <div class="lg:col-span-4 flex gap-3 lg:justify-end">
+            <button class="px-5 py-3 rounded-2xl font-semibold bg-white/15 hover:bg-white/20 border border-white/20 dark:bg-zinc-900 dark:text-white dark:border-zinc-900 dark:hover:opacity-90 transition"
+                    onclick="openPlanner()">
+              Spustit průvodce
+            </button>
+            <button class="px-5 py-3 rounded-2xl font-semibold bg-white text-zinc-950 hover:opacity-90 dark:bg-zinc-950 dark:text-zinc-50 transition"
+                    onclick="switchView('product')">
+              Ukázka produktu
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCT VIEW -->
+    <section id="view-product" class="view hidden">
+      <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <div class="text-xs text-zinc-600 dark:text-zinc-400">Ukázka produktové stránky (demo)</div>
+          <h2 class="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight">Sloupovitý habr (Carpinus betulus)</h2>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 max-w-2xl">
+            Strom pro soukromí a strukturu. Vypadá čistě, roste předvídatelně a dá se udržet řezem.
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button class="px-4 py-2 rounded-xl text-sm font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                  onclick="switchView('home')">
+            ← Zpět
+          </button>
+          <button class="px-4 py-2 rounded-xl text-sm font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:opacity-90 transition shadow-soft">
+            Přidat do digitální zahrady
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-6 grid lg:grid-cols-12 gap-4">
+        <!-- Left: Gallery -->
+        <div class="lg:col-span-5">
+          <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+            <div class="p-4 border-b border-zinc-200/70 dark:border-white/10 flex items-center justify-between">
+              <div class="text-sm font-semibold">Vizuál (demo)</div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Fotky/AR později</div>
+            </div>
+            <div class="p-4">
+              <div class="h-72 sm:h-96 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-gradient-to-br from-zinc-900/5 to-emerald-500/10 dark:from-white/5 dark:to-emerald-500/10 flex items-center justify-center">
+                <div class="text-sm text-zinc-600 dark:text-zinc-400">Hlavní fotka / AR náhled</div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-4 gap-3">
+                <div class="h-16 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5"></div>
+                <div class="h-16 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5"></div>
+                <div class="h-16 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5"></div>
+                <div class="h-16 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5"></div>
+              </div>
+
+              <div class="mt-4 p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Kde se hodí</div>
+                <div class="mt-1 text-sm font-semibold">Soukromí u terasy • Živý plot • Moderní zahrady</div>
+                <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  Ideální pro linie, pravidelnost a „čistý“ design. Přirozený vzhled bez kýče.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Core info -->
+        <div class="lg:col-span-7 space-y-4">
+          <!-- Quick cards -->
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Výška dnes</div>
+              <div class="mt-1 text-lg font-semibold">120–160 cm</div>
+              <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">kontejner</div>
+            </div>
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Péče</div>
+              <div class="mt-1 text-lg font-semibold">Nízká</div>
+              <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">15–25 min / týden</div>
+            </div>
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Bezpečnost</div>
+              <div class="mt-1 text-lg font-semibold">OK</div>
+              <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">děti / pes</div>
+            </div>
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Kořeny</div>
+              <div class="mt-1 text-lg font-semibold">Střední</div>
+              <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">držet odstup od sítí</div>
+            </div>
+          </div>
+
+          <!-- Growth timeline -->
+          <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+            <div class="p-5 border-b border-zinc-200/70 dark:border-white/10 flex items-center justify-between gap-3">
+              <div>
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Růst v čase</div>
+                <div class="text-sm font-semibold">Jak bude vypadat za 5 / 10 / 20 let</div>
+              </div>
+              <div class="text-xs px-2 py-1 rounded-full border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                simulační osu lze napojit na AI
+              </div>
+            </div>
+
+            <div class="p-5">
+              <div class="grid sm:grid-cols-4 gap-3">
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-xs text-zinc-600 dark:text-zinc-400">Dnes</div>
+                  <div class="mt-1 font-semibold">1.2–1.6 m</div>
+                  <div class="mt-2 h-10 rounded-xl bg-zinc-900/5 dark:bg-white/5"></div>
+                </div>
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-xs text-zinc-600 dark:text-zinc-400">Za 5 let</div>
+                  <div class="mt-1 font-semibold">2.5–3.5 m</div>
+                  <div class="mt-2 h-10 rounded-xl bg-zinc-900/5 dark:bg-white/5"></div>
+                </div>
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-xs text-zinc-600 dark:text-zinc-400">Za 10 let</div>
+                  <div class="mt-1 font-semibold">4–6 m</div>
+                  <div class="mt-2 h-10 rounded-xl bg-zinc-900/5 dark:bg-white/5"></div>
+                </div>
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-xs text-zinc-600 dark:text-zinc-400">Za 20 let</div>
+                  <div class="mt-1 font-semibold">7–10 m</div>
+                  <div class="mt-2 h-10 rounded-xl bg-zinc-900/5 dark:bg-white/5"></div>
+                </div>
+              </div>
+
+              <div class="mt-5 p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-gradient-to-r from-emerald-500/10 to-lime-400/10">
+                <div class="text-sm font-semibold">Co to udělá s prostorem</div>
+                <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                  Do 5 let vytvoří čitelnou stěnu soukromí. Do 10 let začne výrazně filtrovat výhled a vytvoří „pokoj“.
+                  Do 20 let je to dominantní prvek — proto je důležitý odstup od sítí a pravidelný řez.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seasonal behaviour + risk -->
+          <div class="grid lg:grid-cols-2 gap-4">
+            <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+              <div class="p-5 border-b border-zinc-200/70 dark:border-white/10">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Roční chování</div>
+                <div class="text-sm font-semibold">Jaro • Léto • Podzim • Zima</div>
+              </div>
+              <div class="p-5 space-y-3">
+                <div class="p-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-sm font-semibold">Jaro</div>
+                  <div class="text-sm text-zinc-700 dark:text-zinc-300">Rychlý start, ideální čas pro tvarování.</div>
+                </div>
+                <div class="p-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-sm font-semibold">Léto</div>
+                  <div class="text-sm text-zinc-700 dark:text-zinc-300">Stabilní stín, pravidelná zálivka v suchu.</div>
+                </div>
+                <div class="p-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-sm font-semibold">Podzim</div>
+                  <div class="text-sm text-zinc-700 dark:text-zinc-300">Přirozený útlum, příprava na zimu.</div>
+                </div>
+                <div class="p-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-sm font-semibold">Zima</div>
+                  <div class="text-sm text-zinc-700 dark:text-zinc-300">Čistá struktura, řez podle doporučení.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+              <div class="p-5 border-b border-zinc-200/70 dark:border-white/10">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Kořeny & rizika</div>
+                <div class="text-sm font-semibold">Dům • Plot • Sítě • Chodníky</div>
+              </div>
+              <div class="p-5 space-y-3">
+                <div class="p-4 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">
+                  <div class="text-sm font-semibold">Doporučený odstup</div>
+                  <div class="mt-1 text-sm opacity-85">od plotu: 0.8–1.2 m • od sítí: 1.5–2.5 m</div>
+                </div>
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <div class="text-sm font-semibold">Rizikové situace</div>
+                  <ul class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 list-disc pl-5 space-y-1">
+                    <li>Výsadba příliš blízko kanalizace / drenáže</li>
+                    <li>Bez řezu může ztratit „sloupovitost“</li>
+                    <li>V extrémním suchu potřebuje pravidelnou zálivku</li>
+                  </ul>
+                </div>
+                <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-gradient-to-r from-cyan-400/10 to-emerald-500/10">
+                  <div class="text-sm font-semibold">AI doporučení (budoucnost)</div>
+                  <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+                    Po zadání rozměrů pozemku a umístění sítí systém automaticky spočítá bezpečné vzdálenosti a navrhne zónu výsadby.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pairings -->
+          <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+            <div class="p-5 border-b border-zinc-200/70 dark:border-white/10 flex items-center justify-between">
+              <div>
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Kombinace</div>
+                <div class="text-sm font-semibold">Co zasadit vedle (a čemu se vyhnout)</div>
+              </div>
+              <button class="text-xs px-3 py-2 rounded-xl border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                      onclick="alert('Demo: později se otevře „Zahradní plán“ s rozmístěním.')">
+                Otevřít zahradní plán
+              </button>
+            </div>
+            <div class="p-5 grid lg:grid-cols-2 gap-4">
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                <div class="text-sm font-semibold">Vhodné kombinace</div>
+                <div class="mt-2 grid sm:grid-cols-2 gap-2">
+                  <div class="p-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5">
+                    <div class="text-sm font-semibold">Trvalky</div>
+                    <div class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">nízká údržba</div>
+                  </div>
+                  <div class="p-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5">
+                    <div class="text-sm font-semibold">Okrasné trávy</div>
+                    <div class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">moderní vzhled</div>
+                  </div>
+                  <div class="p-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5">
+                    <div class="text-sm font-semibold">Mulč</div>
+                    <div class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">držení vlhkosti</div>
+                  </div>
+                  <div class="p-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5">
+                    <div class="text-sm font-semibold">Kapkovka</div>
+                    <div class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">chytrá zálivka</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                <div class="text-sm font-semibold">Čemu se vyhnout</div>
+                <ul class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 list-disc pl-5 space-y-1">
+                  <li>Výsadba do trvale podmáčené půdy bez úpravy</li>
+                  <li>Umístění přímo na hranu chodníku bez odstupu</li>
+                  <li>Kombinace s agresivními kořenícími druhy v těsném prostoru</li>
+                </ul>
+                <div class="mt-3 p-3 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">
+                  <div class="text-sm font-semibold">Pro koho je ideální</div>
+                  <div class="text-sm opacity-85 mt-1">Pro lidi, kteří chtějí design + soukromí a nechtějí se „učit zahradničit“.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Purchase module -->
+          <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+            <div class="p-5 border-b border-zinc-200/70 dark:border-white/10 flex items-center justify-between">
+              <div class="text-sm font-semibold">Nákup (demo)</div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">logistika živých produktů → později</div>
+            </div>
+            <div class="p-5 grid lg:grid-cols-12 gap-4 items-start">
+              <div class="lg:col-span-7">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Varianta</div>
+                <div class="mt-2 flex flex-wrap gap-2">
+                  <button class="px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">120–160 cm</button>
+                  <button class="px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">160–200 cm</button>
+                  <button class="px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">200+ cm</button>
+                </div>
+
+                <div class="mt-4 p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-gradient-to-r from-emerald-500/10 to-cyan-400/10">
+                  <div class="text-sm font-semibold">Garance kvality (vize)</div>
+                  <div class="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+                    Fotodokumentace před odesláním + doporučení péče pro tvůj region + možnost přidat „Péče+“ (notifikace).
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-5">
+                <div class="p-5 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">
+                  <div class="flex items-end justify-between">
+                    <div>
+                      <div class="text-xs opacity-80">Cena (demo)</div>
+                      <div class="text-2xl font-semibold mt-1">1 290 Kč</div>
+                    </div>
+                    <div class="text-xs opacity-80">Skladem: 24 ks</div>
+                  </div>
+                  <button class="mt-4 w-full px-4 py-3 rounded-2xl font-semibold bg-white text-zinc-950 hover:opacity-90 dark:bg-zinc-950 dark:text-zinc-50 transition">
+                    Přidat do košíku
+                  </button>
+                  <div class="mt-3 text-xs opacity-80">
+                    Doručení živých produktů: termín + balení + péče (napojení na logistiku později)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PLANNER VIEW -->
+    <section id="view-planner" class="view hidden">
+      <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <div class="text-xs text-zinc-600 dark:text-zinc-400">Průvodce výběrem (demo)</div>
+          <h2 class="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight">Řekni nám parametry — dostaneš zahradní sestavu</h2>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 max-w-2xl">
+            Tohle je jádro Zahradao. Ne katalog. Rozhodovací engine.
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button class="px-4 py-2 rounded-xl text-sm font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                  onclick="switchView('home')">
+            ← Zpět
+          </button>
+          <button class="px-4 py-2 rounded-xl text-sm font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:opacity-90 transition shadow-soft"
+                  onclick="openPlanner()">
+            Otevřít průvodce
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-6 grid lg:grid-cols-12 gap-4">
+        <div class="lg:col-span-7 rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+          <div class="p-5 border-b border-zinc-200/70 dark:border-white/10">
+            <div class="text-sm font-semibold">Jak to funguje (logika)</div>
+            <div class="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+              Uživatel odpoví na pár otázek → systém vybere ideální typy rostlin → sestaví „zahradní plán“ →
+              doplní péči + notifikace + doporučené kombinace.
+            </div>
+          </div>
+          <div class="p-5 grid sm:grid-cols-2 gap-3">
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Vstupy</div>
+              <div class="mt-1 font-semibold">Pozemek • Region • Péče • Děti/Zvířata</div>
+              <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">Plus: cíl zahrady (soukromí, ovoce, design…)</div>
+            </div>
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Výstup</div>
+              <div class="mt-1 font-semibold">7 řešení</div>
+              <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">Každé řešení má budoucnost 5/10/20 let.</div>
+            </div>
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Důvěra</div>
+              <div class="mt-1 font-semibold">Rizika & kořeny</div>
+              <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">Srozumitelně, bez strašení, ale poctivě.</div>
+            </div>
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Budoucnost</div>
+              <div class="mt-1 font-semibold">AR & AI</div>
+              <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">Náhled na pozemek + automatické rozvržení.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-glow overflow-hidden">
+          <div class="p-6 sm:p-7">
+            <div class="text-xs opacity-80">Ukázková doporučená sestava</div>
+            <div class="mt-2 text-xl font-semibold">„Soukromí u terasy“</div>
+            <div class="mt-2 text-sm opacity-85">
+              2× sloupovitý habr + podrost trvalek + mulč + kapková zálivka.
+            </div>
+
+            <div class="mt-5 space-y-2">
+              <div class="flex items-center justify-between text-sm">
+                <span class="opacity-85">Péče</span>
+                <span class="font-semibold">Nízká</span>
+              </div>
+              <div class="h-2 rounded-full bg-white/15 dark:bg-zinc-900/10 overflow-hidden">
+                <div class="h-2 w-[35%] rounded-full bg-white/70 dark:bg-zinc-900/60"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs opacity-80">
+                <span>15–25 min / týden</span>
+                <span>Low-care</span>
+              </div>
+            </div>
+
+            <button class="mt-6 w-full px-4 py-3 rounded-2xl font-semibold bg-white text-zinc-950 hover:opacity-90 dark:bg-zinc-950 dark:text-zinc-50 transition"
+                    onclick="openPlanner()">
+              Upravit parametry (průvodce)
+            </button>
+
+            <button class="mt-3 w-full px-4 py-3 rounded-2xl font-semibold bg-white/15 hover:bg-white/20 border border-white/20 dark:bg-zinc-900 dark:text-white dark:border-zinc-900 dark:hover:opacity-90 transition"
+                    onclick="switchView('product')">
+              Detail doporučeného stromu
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING VIEW -->
+    <section id="view-pricing" class="view hidden">
+      <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <div class="text-xs text-zinc-600 dark:text-zinc-400">Předplatné (demo)</div>
+          <h2 class="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight">Péče+ a Digitální zahrada</h2>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300 max-w-2xl">
+            Monetizace, která dává smysl: klid v hlavě, lepší výsledky, ne „spam“.
+          </div>
+        </div>
+        <button class="px-4 py-2 rounded-xl text-sm font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                onclick="switchView('home')">
+          ← Zpět
+        </button>
+      </div>
+
+      <div class="mt-6 grid lg:grid-cols-3 gap-4">
+        <div class="p-6 rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft">
+          <div class="text-xs text-zinc-600 dark:text-zinc-400">Zdarma</div>
+          <div class="mt-1 text-xl font-semibold">Start</div>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+            Výběr rostlin, produktové detaily, základní doporučení.
+          </div>
+          <ul class="mt-4 text-sm text-zinc-700 dark:text-zinc-300 list-disc pl-5 space-y-1">
+            <li>7 řešení pro zahradu</li>
+            <li>Růst 5/10/20 let</li>
+            <li>Rizika & kořeny</li>
+          </ul>
+          <button class="mt-6 w-full px-4 py-3 rounded-2xl font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Použít zdarma
+          </button>
+        </div>
+
+        <div class="p-6 rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-glow">
+          <div class="text-xs opacity-80">Nejpopulárnější</div>
+          <div class="mt-1 text-xl font-semibold">Péče+</div>
+          <div class="mt-2 text-sm opacity-85">
+            Notifikace, plán péče, digitální zahrada a chytrá doporučení.
+          </div>
+          <div class="mt-4 text-3xl font-semibold">99 Kč<span class="text-sm opacity-80"> / měsíc</span></div>
+          <ul class="mt-4 text-sm opacity-90 list-disc pl-5 space-y-1">
+            <li>Upozornění: zálivka / řez / hnojení</li>
+            <li>Historie rostlin + doporučení</li>
+            <li>Plán zahrady (základy)</li>
+          </ul>
+          <button class="mt-6 w-full px-4 py-3 rounded-2xl font-semibold bg-white text-zinc-950 hover:opacity-90 dark:bg-zinc-950 dark:text-zinc-50 transition">
+            Aktivovat Péče+
+          </button>
+        </div>
+
+        <div class="p-6 rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft">
+          <div class="text-xs text-zinc-600 dark:text-zinc-400">Pro profíky</div>
+          <div class="mt-1 text-xl font-semibold">B2B / Architekt</div>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+            Nabídky, návrhy, exporty, týmová spolupráce a projekty.
+          </div>
+          <ul class="mt-4 text-sm text-zinc-700 dark:text-zinc-300 list-disc pl-5 space-y-1">
+            <li>Správa klientů a projektů</li>
+            <li>Export plánů</li>
+            <li>Firemní ceníky</li>
+          </ul>
+          <button class="mt-6 w-full px-4 py-3 rounded-2xl font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Chci B2B nabídku
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-10 border-t border-zinc-200/70 dark:border-white/10 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 py-10">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div>
+          <div class="font-semibold">Zahradao.cz</div>
+          <div class="text-sm text-zinc-600 dark:text-zinc-400">
+            „Operační systém pro zahradu“ — výběr, který dává smysl dnes i za 20 let.
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="px-3 py-2 rounded-xl text-sm border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                  onclick="switchView('home')">Domů</button>
+          <button class="px-3 py-2 rounded-xl text-sm border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                  onclick="switchView('product')">Produkt</button>
+          <button class="px-3 py-2 rounded-xl text-sm border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition"
+                  onclick="openPlanner()">Průvodce</button>
+        </div>
+      </div>
+            <div class="mt-6 text-xs text-zinc-500 dark:text-zinc-500">
+        © <span id="year"></span> Zahradao.cz • Prototyp • CZ
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script>
+    // ---------- Helpers ----------
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+    const views = ["home", "product", "planner", "pricing"];
+    const viewEls = Object.fromEntries(views.map(v => [v, $("#view-" + v)]));
+
+    // ---------- Theme ----------
+    const THEME_KEY = "zahradao_theme"; // 'light' | 'dark'
+    const themeLabel = $("#themeLabel");
+    const html = document.documentElement;
+
+    function applyTheme(mode) {
+      if (mode === "dark") html.classList.add("dark");
+      else html.classList.remove("dark");
+
+      if (themeLabel) themeLabel.textContent = (mode === "dark") ? "Tmavý" : "Světlý";
+      localStorage.setItem(THEME_KEY, mode);
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === "dark" || saved === "light") {
+        applyTheme(saved);
+        return;
+      }
+      // fallback: prefer system
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      applyTheme(prefersDark ? "dark" : "light");
+    }
+
+    $("#toggleTheme")?.addEventListener("click", () => {
+      const isDark = html.classList.contains("dark");
+      applyTheme(isDark ? "light" : "dark");
+    });
+
+    // ---------- View switching ----------
+    function setActiveNav(view) {
+      $$(".navBtn").forEach(btn => {
+        const active = btn.getAttribute("data-view") === view;
+        btn.classList.toggle("bg-zinc-900/5", active);
+        btn.classList.toggle("dark:bg-white/10", active);
+      });
+    }
+
+    function switchView(view) {
+      if (!views.includes(view)) view = "home";
+
+      views.forEach(v => {
+        if (!viewEls[v]) return;
+        viewEls[v].classList.toggle("hidden", v !== view);
+      });
+
+      setActiveNav(view);
+
+      // update URL hash (nice for sharing)
+      history.replaceState(null, "", "#" + view);
+
+      // scroll top of content area (ne úplně top kvůli sticky headeru)
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Make accessible globally for inline onclick=""
+    window.switchView = switchView;
+
+    // ---------- Planner open ----------
+    function openPlanner() {
+      switchView("planner");
+      // jemné posunutí, ať je nadpis hezky vidět pod sticky headerem
+      setTimeout(() => {
+        const el = $("#view-planner");
+        if (!el) return;
+        const y = el.getBoundingClientRect().top + window.scrollY - 90;
+        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+      }, 50);
+    }
+    window.openPlanner = openPlanner;
+
+    // Top-right CTA uses id openPlanner (button) – hook it too
+    $("#openPlanner")?.addEventListener("click", openPlanner);
+
+    // Nav buttons
+    $$(".navBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const view = btn.getAttribute("data-view");
+        switchView(view);
+      });
+    });
+
+    // ---------- Init ----------
+    $("#year").textContent = new Date().getFullYear();
+
+    initTheme();
+
+    // start view from hash if exists
+    const hash = (location.hash || "").replace("#", "").trim();
+    if (views.includes(hash)) switchView(hash);
+    else switchView("home");
+  </script>
+</body>
+</html>
