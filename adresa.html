@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="cs" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zahradao.cz — Adresa</title>
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          boxShadow: {
+            soft: '0 18px 60px rgba(0,0,0,.12)',
+            glow: '0 0 0 1px rgba(255,255,255,.08), 0 18px 60px rgba(0,0,0,.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root { color-scheme: light; }
+    html.dark { color-scheme: dark; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+    .grain:before{
+      content:"";
+      position:absolute; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      opacity:.08; pointer-events:none; mix-blend-mode:overlay;
+    }
+
+    /* invalid style */
+    .is-invalid{ border-color: rgba(244,63,94,.55) !important; box-shadow: 0 0 0 4px rgba(244,63,94,.12); }
+  </style>
+</head>
+
+<body class="h-full bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
+  <!-- Ambient background -->
+  <div class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-24 -left-24 h-96 w-96 rounded-full blur-3xl opacity-40 dark:opacity-35 bg-emerald-400"></div>
+    <div class="absolute top-20 -right-24 h-[34rem] w-[34rem] rounded-full blur-3xl opacity-35 dark:opacity-30 bg-lime-300"></div>
+    <div class="absolute -bottom-32 left-1/3 h-[30rem] w-[30rem] rounded-full blur-3xl opacity-25 dark:opacity-25 bg-cyan-300"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-white/70 dark:via-zinc-950/20 dark:to-zinc-950"></div>
+  </div>
+
+  <!-- Top bar -->
+  <header class="sticky top-0 z-50 border-b border-zinc-200/70 dark:border-white/10 backdrop-blur-xl bg-white/60 dark:bg-zinc-950/40">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="flex items-center justify-between py-3">
+        <a href="./index.html#home" class="flex items-center gap-3 group">
+          <div class="h-10 w-10 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 grid place-items-center shadow-soft">
+            <span class="text-sm font-bold tracking-tight">ZA</span>
+          </div>
+          <div class="leading-tight">
+            <div class="font-semibold tracking-tight group-hover:opacity-90">Zahradao.cz</div>
+            <div class="text-xs text-zinc-600 dark:text-zinc-400">Pokladna • Adresa</div>
+          </div>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-1">
+          <a href="./index.html#home" class="px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Domů</a>
+          <a href="./katalog.html" class="px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Katalog</a>
+          <a href="./kosik.html" class="relative px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Košík
+            <span id="cartBadge" class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 text-[11px] leading-[18px] text-center rounded-full bg-emerald-600 text-white hidden">0</span>
+          </a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <a href="./doprava-platba.html" class="hidden sm:inline-flex px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">← Doprava a platba</a>
+          <a href="./kosik.html" class="sm:hidden inline-flex px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Košík</a>
+          <button id="toggleTheme" class="px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Režim: <span id="themeLabel">Světlý</span></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toasts -->
+  <div id="toastWrap" class="fixed top-20 right-4 z-[999] space-y-2"></div>
+
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-10">
+    <div class="flex items-end justify-between gap-4 flex-wrap">
+      <div>
+        <div class="text-xs text-zinc-600 dark:text-zinc-400">Krok 2/2</div>
+        <h1 class="mt-1 text-2xl sm:text-4xl font-semibold tracking-tight">Údaje a adresa</h1>
+        <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">Vyplň kontakt a doručovací údaje. (Prototyp)</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="text-xs px-3 py-2 rounded-full border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">Validace + uložení</div>
+      </div>
+    </div>
+
+    <div class="mt-6 grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- Form -->
+      <section class="lg:col-span-7 space-y-6">
+
+        <!-- Contact -->
+        <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+          <div class="p-6 sm:p-8 border-b border-zinc-200/70 dark:border-white/10">
+            <div class="text-sm font-semibold">Kontakt</div>
+            <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">Na e‑mail pošleme potvrzení (demo).</div>
+          </div>
+          <div class="p-6 sm:p-8 grid sm:grid-cols-2 gap-4">
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Jméno *</div>
+              <input id="inFirst" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="Např. Michal" autocomplete="given-name" />
+            </div>
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Příjmení *</div>
+              <input id="inLast" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="Např. Šurmánek" autocomplete="family-name" />
+            </div>
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">E‑mail *</div>
+              <input id="inEmail" type="email" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="např. ja@email.cz" autocomplete="email" />
+            </div>
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Telefon *</div>
+              <input id="inPhone" inputmode="tel" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="např. 777 123 456" autocomplete="tel" />
+              <div class="mt-2 text-[11px] text-zinc-600 dark:text-zinc-400">Použij pro kurýra. Formát: 9 číslic (mezery OK).</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+          <div class="p-6 sm:p-8 border-b border-zinc-200/70 dark:border-white/10">
+            <div class="text-sm font-semibold">Doručovací adresa</div>
+            <div id="shipHint" class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">—</div>
+          </div>
+
+          <div class="p-6 sm:p-8 grid sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Ulice a číslo *</div>
+              <input id="inStreet" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="Např. Dlouhá 12" autocomplete="street-address" />
+            </div>
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Město *</div>
+              <input id="inCity" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="Např. Uherské Hradiště" autocomplete="address-level2" />
+            </div>
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">PSČ *</div>
+              <input id="inZip" inputmode="numeric" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="Např. 686 01" autocomplete="postal-code" />
+              <div class="mt-2 text-[11px] text-zinc-600 dark:text-zinc-400">Formát: 5 číslic (mezera OK).</div>
+            </div>
+            <div class="sm:col-span-2">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Poznámka k adrese</div>
+              <input id="inAddrNote" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="Např. zvonek, patro, vjezd, ..." />
+            </div>
+
+            <div class="sm:col-span-2">
+              <label class="flex items-start gap-3 p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5">
+                <input id="chkInvoice" type="checkbox" class="mt-1">
+                <div>
+                  <div class="text-sm font-semibold">Chci fakturu na firmu</div>
+                  <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">IČO/DIČ bude povinné.</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div id="invoiceWrap" class="hidden p-6 sm:p-8 border-t border-zinc-200/70 dark:border-white/10 grid sm:grid-cols-2 gap-4">
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Název firmy *</div>
+              <input id="inCompany" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="Např. AO Group s.r.o." />
+            </div>
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">IČO *</div>
+              <input id="inIco" inputmode="numeric" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="8 číslic" />
+            </div>
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">DIČ</div>
+              <input id="inDic" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="CZ... (nepovinné)" />
+            </div>
+            <div>
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">E‑mail pro faktury</div>
+              <input id="inInvoiceEmail" type="email" class="mt-2 w-full px-4 py-3 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-zinc-950/40" placeholder="pokud jiný" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Consent -->
+        <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+          <div class="p-6 sm:p-8 border-b border-zinc-200/70 dark:border-white/10">
+            <div class="text-sm font-semibold">Souhlasy</div>
+            <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">Bez toho to nepustíme dál (demo).</div>
+          </div>
+          <div class="p-6 sm:p-8 space-y-3">
+            <label class="flex items-start gap-3 p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5">
+              <input id="chkTerms" type="checkbox" class="mt-1">
+              <div>
+                <div class="text-sm font-semibold">Souhlasím s obchodními podmínkami *</div>
+                <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">Později doplníme odkazy.</div>
+              </div>
+            </label>
+            <label class="flex items-start gap-3 p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5">
+              <input id="chkPrivacy" type="checkbox" class="mt-1">
+              <div>
+                <div class="text-sm font-semibold">Souhlasím se zpracováním osobních údajů *</div>
+                <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">GDPR text doplníme.</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Summary -->
+      <aside class="lg:col-span-5">
+        <div class="relative overflow-hidden rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft grain">
+          <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-cyan-400/10"></div>
+          <div class="relative p-6 sm:p-8">
+            <div class="text-sm font-semibold">Souhrn</div>
+            <div class="mt-2 text-xs text-zinc-600 dark:text-zinc-400">Načítáme z předchozího kroku.</div>
+
+            <div class="mt-4 space-y-2">
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 flex items-center justify-between">
+                <div class="text-sm">Mezisoučet</div>
+                <div id="sumSubtotal" class="text-sm font-semibold">0 Kč</div>
+              </div>
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 flex items-center justify-between">
+                <div class="text-sm">Doprava</div>
+                <div id="sumShip" class="text-sm font-semibold">0 Kč</div>
+              </div>
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 flex items-center justify-between">
+                <div class="text-sm">Platba</div>
+                <div id="sumPay" class="text-sm font-semibold">0 Kč</div>
+              </div>
+            </div>
+
+            <div class="mt-5 p-5 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">
+              <div class="text-sm opacity-85">Celkem</div>
+              <div id="sumTotal" class="mt-1 text-3xl font-semibold">0 Kč</div>
+              <button id="btnOrder" class="mt-4 w-full px-4 py-3 rounded-2xl font-semibold bg-white text-zinc-950 hover:opacity-90 dark:bg-zinc-950 dark:text-zinc-50 transition">Odeslat objednávku</button>
+              <div id="orderHint" class="mt-3 text-xs opacity-80">Demo: vytvoříme potvrzení + číslo objednávky.</div>
+            </div>
+
+            <div class="mt-4 text-xs text-zinc-600 dark:text-zinc-400">
+              Poznámka z dopravy: <span id="sumNote" class="font-semibold">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-xs text-zinc-600 dark:text-zinc-400">
+          * V dalším kroku uděláme stránku <span class="font-semibold">potvrzení objednávky</span> + vyčištění košíku.
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <footer class="mt-10 border-t border-zinc-200/70 dark:border-white/10 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <div class="font-semibold">Zahradao.cz</div>
+          <div class="text-sm text-zinc-600 dark:text-zinc-400">Pokladna • Adresa</div>
+        </div>
+        <div class="text-xs text-zinc-500">© <span id="year"></span> Zahradao.cz</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+    // ---- Theme ----
+    const THEME_KEY = "zahradao_theme";
+    const html = document.documentElement;
+    const themeLabel = $("#themeLabel");
+
+    function applyTheme(mode){
+      if (mode === "dark") html.classList.add("dark");
+      else html.classList.remove("dark");
+      if (themeLabel) themeLabel.textContent = (mode === "dark") ? "Tmavý" : "Světlý";
+      localStorage.setItem(THEME_KEY, mode);
+    }
+
+    function initTheme(){
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === "dark" || saved === "light") return applyTheme(saved);
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      applyTheme(prefersDark ? "dark" : "light");
+    }
+
+    $("#toggleTheme")?.addEventListener("click", () => {
+      applyTheme(html.classList.contains("dark") ? "light" : "dark");
+    });
+
+    // ---- Toast ----
+    function toast(msg, type="info"){
+      const wrap = $("#toastWrap");
+      if (!wrap) return;
+      const el = document.createElement("div");
+      el.className = "max-w-[320px] p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/80 dark:bg-zinc-950/70 backdrop-blur-xl shadow-soft text-sm";
+      if (type === "success") el.classList.add("ring-1","ring-emerald-500/30");
+      if (type === "danger") el.classList.add("ring-1","ring-rose-500/30");
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => el.classList.add("opacity-0","translate-y-1"), 2200);
+      setTimeout(() => el.remove(), 2600);
+    }
+
+    // ---- Money ----
+    const CZK = new Intl.NumberFormat('cs-CZ');
+    const formatCZK = (n) => CZK.format(Math.round(n)) + " Kč";
+
+    // ---- Storage ----
+    const LS_CART = "zahradao_cart_v1";
+    const LS_CHECKOUT = "zahradao_checkout_v1";
+    const LS_CUSTOMER = "zahradao_customer_v1";
+
+    function readLS(key, fallback){
+      try { return JSON.parse(localStorage.getItem(key) || "") || fallback; } catch { return fallback; }
+    }
+    function writeLS(key, value){
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+    }
+
+    function stripDigits(s){
+      return String(s || "").replace(/\D+/g, "");
+    }
+
+    function isEmail(s){
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s||"").trim());
+    }
+
+    function validate(){
+      const fields = {
+        inFirst: v => String(v).trim().length >= 2,
+        inLast:  v => String(v).trim().length >= 2,
+        inEmail: v => isEmail(v),
+        inPhone: v => stripDigits(v).length === 9,
+        inStreet:v => String(v).trim().length >= 4,
+        inCity:  v => String(v).trim().length >= 2,
+        inZip:   v => stripDigits(v).length === 5,
+      };
+
+      let ok = true;
+      Object.entries(fields).forEach(([id, fn]) => {
+        const el = $("#"+id);
+        if (!el) return;
+        const valid = fn(el.value);
+        el.classList.toggle('is-invalid', !valid);
+        ok = ok && valid;
+      });
+
+      // invoice
+      const invoiceOn = $("#chkInvoice")?.checked;
+      if (invoiceOn) {
+        const req = {
+          inCompany: v => String(v).trim().length >= 2,
+          inIco: v => stripDigits(v).length === 8,
+        };
+        Object.entries(req).forEach(([id, fn]) => {
+          const el = $("#"+id);
+          const valid = fn(el.value);
+          el.classList.toggle('is-invalid', !valid);
+          ok = ok && valid;
+        });
+      }
+
+      // consents
+      const terms = $("#chkTerms")?.checked;
+      const privacy = $("#chkPrivacy")?.checked;
+      if (!terms || !privacy) ok = false;
+
+      return ok;
+    }
+
+    function persistCustomer(){
+      const payload = {
+        first: $("#inFirst")?.value.trim() || "",
+        last: $("#inLast")?.value.trim() || "",
+        email: $("#inEmail")?.value.trim() || "",
+        phone: stripDigits($("#inPhone")?.value || ""),
+        addr: {
+          street: $("#inStreet")?.value.trim() || "",
+          city: $("#inCity")?.value.trim() || "",
+          zip: stripDigits($("#inZip")?.value || ""),
+          note: $("#inAddrNote")?.value.trim() || "",
+        },
+        invoice: {
+          enabled: $("#chkInvoice")?.checked || false,
+          company: $("#inCompany")?.value.trim() || "",
+          ico: stripDigits($("#inIco")?.value || ""),
+          dic: $("#inDic")?.value.trim() || "",
+          email: $("#inInvoiceEmail")?.value.trim() || "",
+        },
+        consents: {
+          terms: $("#chkTerms")?.checked || false,
+          privacy: $("#chkPrivacy")?.checked || false,
+        },
+        ts: Date.now()
+      };
+      writeLS(LS_CUSTOMER, payload);
+      return payload;
+    }
+
+    function setShipHint(checkout){
+      const hint = $("#shipHint");
+      if (!hint) return;
+      const shipKey = checkout?.ship?.key || "courier";
+      if (shipKey === "pickup") hint.textContent = "U osobního odběru můžeš adresu vyplnit, ale bude použita jen pro fakturaci (demo).";
+      else hint.textContent = "Zadej doručovací adresu, kam má kurýr přivézt zásilku.";
+    }
+
+    function renderSummary(){
+      const checkout = readLS(LS_CHECKOUT, null);
+      const totals = checkout?.totals || { subtotal: 0, ship: 0, pay: 0, total: 0 };
+
+      $("#sumSubtotal").textContent = formatCZK(totals.subtotal || 0);
+      $("#sumShip").textContent = formatCZK(totals.ship || 0);
+      $("#sumPay").textContent = formatCZK(totals.pay || 0);
+      $("#sumTotal").textContent = formatCZK(totals.total || 0);
+
+      $("#sumNote").textContent = (checkout?.note || "—");
+      setShipHint(checkout);
+
+      // disable order if cart empty
+      const cart = readLS(LS_CART, []);
+      if (!cart.length) {
+        $("#btnOrder").disabled = true;
+        $("#btnOrder").classList.add("opacity-50","cursor-not-allowed");
+        $("#orderHint").textContent = "Košík je prázdný — vrať se do košíku.";
+      }
+    }
+
+    function restoreCustomer(){
+      const c = readLS(LS_CUSTOMER, null);
+      if (!c) return;
+      $("#inFirst").value = c.first || "";
+      $("#inLast").value = c.last || "";
+      $("#inEmail").value = c.email || "";
+      $("#inPhone").value = c.phone || "";
+      $("#inStreet").value = c.addr?.street || "";
+      $("#inCity").value = c.addr?.city || "";
+      $("#inZip").value = c.addr?.zip || "";
+      $("#inAddrNote").value = c.addr?.note || "";
+
+      if (c.invoice?.enabled) {
+        $("#chkInvoice").checked = true;
+        $("#invoiceWrap").classList.remove('hidden');
+      }
+      $("#inCompany").value = c.invoice?.company || "";
+      $("#inIco").value = c.invoice?.ico || "";
+      $("#inDic").value = c.invoice?.dic || "";
+      $("#inInvoiceEmail").value = c.invoice?.email || "";
+
+      $("#chkTerms").checked = !!c.consents?.terms;
+      $("#chkPrivacy").checked = !!c.consents?.privacy;
+    }
+
+    function init(){
+      $("#year").textContent = String(new Date().getFullYear());
+      initTheme();
+      renderSummary();
+      restoreCustomer();
+
+      $("#chkInvoice")?.addEventListener('change', (e) => {
+        $("#invoiceWrap").classList.toggle('hidden', !e.target.checked);
+        persistCustomer();
+      });
+
+      // autosave
+      ["inFirst","inLast","inEmail","inPhone","inStreet","inCity","inZip","inAddrNote","inCompany","inIco","inDic","inInvoiceEmail","chkTerms","chkPrivacy"].forEach(id => {
+        const el = $("#"+id);
+        if (!el) return;
+        el.addEventListener('input', () => { persistCustomer(); });
+        el.addEventListener('change', () => { persistCustomer(); });
+      });
+
+      $("#btnOrder")?.addEventListener('click', () => {
+        const cart = readLS(LS_CART, []);
+        if (!cart.length) {
+          toast("Košík je prázdný", "danger");
+          return;
+        }
+
+        // Validate
+        const ok = validate();
+        persistCustomer();
+
+        if (!ok) {
+          toast("Zkontroluj povinná pole a souhlasy", "danger");
+          // scroll to first invalid
+          const firstBad = document.querySelector('.is-invalid');
+          firstBad?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
+        // create order number (demo)
+        const orderNo = "ZA" + String(Date.now()).slice(-8);
+        const checkout = readLS(LS_CHECKOUT, {});
+        const customer = readLS(LS_CUSTOMER, {});
+
+        const order = {
+          orderNo,
+          cart,
+          checkout,
+          customer,
+          createdAt: new Date().toISOString(),
+        };
+        writeLS("zahradao_last_order_v1", order);
+
+        // clear cart (optional: keep for debug) -> clear
+        writeLS(LS_CART, []);
+
+        toast("Objednávka vytvořena (demo)", "success");
+        window.location.href = "./potvrzeni.html";
+      });
+    }
+
+    function updateCartBadge(){
+      const cart = readLS(LS_CART, []);
+      const count = cart.reduce((a,i)=>a+(i.qty||0),0);
+      const badge = document.getElementById('cartBadge');
+      if(!badge) return;
+      if(count > 0){
+        badge.textContent = count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    window.addEventListener('storage', (e)=>{
+      if(e.key === LS_CART) updateCartBadge();
+    });
+
+    updateCartBadge();
+    init();
+  </script>
+</body>
+</html>
