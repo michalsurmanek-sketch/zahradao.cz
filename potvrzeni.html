@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="cs" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zahradao.cz — Potvrzení objednávky</title>
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          boxShadow: {
+            soft: '0 18px 60px rgba(0,0,0,.12)',
+            glow: '0 0 0 1px rgba(255,255,255,.08), 0 18px 60px rgba(0,0,0,.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root { color-scheme: light; }
+    html.dark { color-scheme: dark; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+    .grain:before{
+      content:"";
+      position:absolute; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      opacity:.08; pointer-events:none; mix-blend-mode:overlay;
+    }
+  </style>
+</head>
+
+<body class="h-full bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
+  <!-- Ambient background -->
+  <div class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-24 -left-24 h-96 w-96 rounded-full blur-3xl opacity-40 dark:opacity-35 bg-emerald-400"></div>
+    <div class="absolute top-20 -right-24 h-[34rem] w-[34rem] rounded-full blur-3xl opacity-35 dark:opacity-30 bg-lime-300"></div>
+    <div class="absolute -bottom-32 left-1/3 h-[30rem] w-[30rem] rounded-full blur-3xl opacity-25 dark:opacity-25 bg-cyan-300"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-white/70 dark:via-zinc-950/20 dark:to-zinc-950"></div>
+  </div>
+
+  <!-- Top bar -->
+  <header class="sticky top-0 z-50 border-b border-zinc-200/70 dark:border-white/10 backdrop-blur-xl bg-white/60 dark:bg-zinc-950/40">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="flex items-center justify-between py-3">
+        <a href="./index.html#home" class="flex items-center gap-3 group">
+          <div class="h-10 w-10 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 grid place-items-center shadow-soft">
+            <span class="text-sm font-bold tracking-tight">ZA</span>
+          </div>
+          <div class="leading-tight">
+            <div class="font-semibold tracking-tight group-hover:opacity-90">Zahradao.cz</div>
+            <div class="text-xs text-zinc-600 dark:text-zinc-400">Potvrzení objednávky</div>
+          </div>
+        </a>
+
+        <div class="flex items-center gap-2">
+          <a href="./katalog.html" class="hidden sm:inline-flex px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Katalog</a>
+          <button id="toggleTheme" class="px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Režim: <span id="themeLabel">Světlý</span></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 py-10">
+
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- Left: hero -->
+      <section class="lg:col-span-7">
+        <div class="relative overflow-hidden rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft grain">
+          <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/12 to-cyan-400/12"></div>
+          <div class="relative p-6 sm:p-10">
+
+            <div class="flex items-start gap-4">
+              <div class="h-12 w-12 rounded-2xl bg-emerald-600 text-white grid place-items-center shadow-soft">
+                <span class="text-xl">✓</span>
+              </div>
+              <div>
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Objednávka byla vytvořena</div>
+                <h1 class="mt-1 text-2xl sm:text-4xl font-semibold tracking-tight">Děkujeme!</h1>
+                <div class="mt-3 text-sm text-zinc-700 dark:text-zinc-300">Do e‑mailu pošleme potvrzení (demo). Teď se můžeš vrátit do katalogu nebo prohlédnout rekapitulaci.</div>
+              </div>
+            </div>
+
+            <div class="mt-6 grid sm:grid-cols-3 gap-3">
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Číslo objednávky</div>
+                <div id="orderNo" class="mt-1 text-lg font-semibold">—</div>
+              </div>
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Celkem</div>
+                <div id="orderTotal" class="mt-1 text-lg font-semibold">—</div>
+              </div>
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Vytvořeno</div>
+                <div id="orderDate" class="mt-1 text-lg font-semibold">—</div>
+              </div>
+            </div>
+
+            <div class="mt-6 flex gap-2 flex-wrap">
+              <a href="./katalog.html" class="px-5 py-3 rounded-2xl font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:opacity-90 transition shadow-soft">Pokračovat v nákupu</a>
+              <a href="./index.html#planner" class="px-5 py-3 rounded-2xl font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Průvodce výsadbou</a>
+              <button id="btnPrint" class="px-5 py-3 rounded-2xl font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Vytisknout</button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="mt-6 text-xs text-zinc-600 dark:text-zinc-400">
+          * Demo: v reálu zde bude e‑mail, faktura a stav objednávky.
+        </div>
+      </section>
+
+      <!-- Right: recap -->
+      <aside class="lg:col-span-5">
+        <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+          <div class="p-6 sm:p-8 border-b border-zinc-200/70 dark:border-white/10">
+            <div class="text-sm font-semibold">Rekapitulace</div>
+            <div id="mini" class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">—</div>
+          </div>
+          <div class="p-6 sm:p-8 space-y-3">
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Doprava</div>
+              <div id="ship" class="mt-1 text-sm font-semibold">—</div>
+            </div>
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Platba</div>
+              <div id="pay" class="mt-1 text-sm font-semibold">—</div>
+            </div>
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Doručení</div>
+              <div id="addr" class="mt-1 text-sm font-semibold">—</div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">
+              <div class="text-sm opacity-85">Položky</div>
+              <div id="items" class="mt-3 space-y-2"></div>
+              <div class="mt-4 pt-4 border-t border-white/15 dark:border-zinc-950/15">
+                <div class="flex items-center justify-between text-sm">
+                  <div class="opacity-85">Mezisoučet</div>
+                  <div id="sub" class="font-semibold">—</div>
+                </div>
+                <div class="mt-2 flex items-center justify-between text-sm">
+                  <div class="opacity-85">Doprava</div>
+                  <div id="shipPrice" class="font-semibold">—</div>
+                </div>
+                <div class="mt-2 flex items-center justify-between text-sm">
+                  <div class="opacity-85">Platba</div>
+                  <div id="payFee" class="font-semibold">—</div>
+                </div>
+                <div class="mt-2 flex items-center justify-between text-sm">
+                  <div class="opacity-85">Celkem</div>
+                  <div id="tot" class="font-semibold">—</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+  </main>
+
+  <footer class="mt-10 border-t border-zinc-200/70 dark:border-white/10 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <div class="font-semibold">Zahradao.cz</div>
+          <div class="text-sm text-zinc-600 dark:text-zinc-400">Potvrzení objednávky</div>
+        </div>
+        <div class="text-xs text-zinc-500">© <span id="year"></span> Zahradao.cz</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const $ = (s, r=document) => r.querySelector(s);
+
+    // Theme
+    const THEME_KEY = "zahradao_theme";
+    const html = document.documentElement;
+    const themeLabel = $("#themeLabel");
+
+    function applyTheme(mode){
+      if (mode === "dark") html.classList.add("dark");
+      else html.classList.remove("dark");
+      if (themeLabel) themeLabel.textContent = (mode === "dark") ? "Tmavý" : "Světlý";
+      localStorage.setItem(THEME_KEY, mode);
+    }
+
+    function initTheme(){
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === "dark" || saved === "light") return applyTheme(saved);
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      applyTheme(prefersDark ? "dark" : "light");
+    }
+
+    $("#toggleTheme")?.addEventListener("click", () => {
+      applyTheme(html.classList.contains("dark") ? "light" : "dark");
+    });
+
+    // Money
+    const CZK = new Intl.NumberFormat('cs-CZ');
+    const formatCZK = (n) => CZK.format(Math.round(n)) + " Kč";
+
+    // Storage
+    const LS_LAST_ORDER = "zahradao_last_order_v1";
+
+    function readLS(key, fallback){
+      try { return JSON.parse(localStorage.getItem(key) || "") || fallback; } catch { return fallback; }
+    }
+
+    function render(){
+      const order = readLS(LS_LAST_ORDER, null);
+      if (!order) {
+        // fallback: allow visiting page directly
+        $("#orderNo").textContent = "—";
+        $("#orderTotal").textContent = "—";
+        $("#orderDate").textContent = "—";
+        $("#mini").textContent = "Nenalezena poslední objednávka. Vytvoř objednávku v pokladně.";
+        $("#items").innerHTML = `<div class="text-sm opacity-80">Žádné položky</div>`;
+        return;
+      }
+
+      const totals = order.checkout?.totals || { subtotal: 0, ship: 0, pay: 0, total: 0 };
+      const ship = order.checkout?.ship || {};
+      const pay = order.checkout?.pay || {};
+      const c = order.customer || {};
+      const addr = c.addr || {};
+
+      $("#orderNo").textContent = order.orderNo || "—";
+      $("#orderTotal").textContent = formatCZK(totals.total || 0);
+      const dt = order.createdAt ? new Date(order.createdAt) : new Date();
+      $("#orderDate").textContent = dt.toLocaleString('cs-CZ');
+
+      $("#ship").textContent = `${ship.label || '—'} (${formatCZK(ship.price || 0)})`;
+      $("#pay").textContent = `${pay.label || '—'} (${formatCZK(pay.fee || 0)})`;
+      $("#addr").textContent = `${addr.street || '—'}, ${addr.city || ''} ${addr.zip || ''}`.trim();
+
+      const items = Array.isArray(order.cart) ? order.cart : [];
+      $("#mini").textContent = `${items.reduce((a,i)=>a+(i.qty||0),0)} ks • ${c.first || ''} ${c.last || ''}`.trim();
+
+      $("#items").innerHTML = items.map(it => {
+        const line = (it.variant_label ? ` • ${it.variant_label}` : '');
+        return `<div class="flex items-start justify-between gap-3 text-sm">
+          <div class="opacity-90">${it.name || it.id}${line}<div class="text-xs opacity-70">Množství: ${it.qty || 1}</div></div>
+          <div class="font-semibold">${formatCZK((it.price || 0) * (it.qty || 1))}</div>
+        </div>`;
+      }).join("") || `<div class="text-sm opacity-80">Žádné položky</div>`;
+
+      $("#sub").textContent = formatCZK(totals.subtotal || 0);
+      $("#shipPrice").textContent = formatCZK(totals.ship || 0);
+      $("#payFee").textContent = formatCZK(totals.pay || 0);
+      $("#tot").textContent = formatCZK(totals.total || 0);
+    }
+
+    function init(){
+      $("#year").textContent = String(new Date().getFullYear());
+      initTheme();
+      render();
+
+      $("#btnPrint")?.addEventListener('click', () => window.print());
+    }
+
+    init();
+  </script>
+</body>
+</html>
