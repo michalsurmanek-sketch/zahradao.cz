@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="cs" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zahradao.cz — Produkt</title>
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          boxShadow: {
+            soft: '0 18px 60px rgba(0,0,0,.12)',
+            glow: '0 0 0 1px rgba(255,255,255,.08), 0 18px 60px rgba(0,0,0,.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root { color-scheme: light; }
+    html.dark { color-scheme: dark; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+    /* Soft grain */
+    .grain:before{
+      content:"";
+      position:absolute; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      opacity:.08; pointer-events:none; mix-blend-mode:overlay;
+    }
+  </style>
+</head>
+
+<body class="h-full bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
+  <!-- Ambient background -->
+  <div class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-24 -left-24 h-96 w-96 rounded-full blur-3xl opacity-40 dark:opacity-35 bg-emerald-400"></div>
+    <div class="absolute top-20 -right-24 h-[34rem] w-[34rem] rounded-full blur-3xl opacity-35 dark:opacity-30 bg-lime-300"></div>
+    <div class="absolute -bottom-32 left-1/3 h-[30rem] w-[30rem] rounded-full blur-3xl opacity-25 dark:opacity-25 bg-cyan-300"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-white/70 dark:via-zinc-950/20 dark:to-zinc-950"></div>
+  </div>
+
+  <!-- Top bar -->
+  <header class="sticky top-0 z-50 border-b border-zinc-200/70 dark:border-white/10 backdrop-blur-xl bg-white/60 dark:bg-zinc-950/40">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="flex items-center justify-between py-3">
+        <!-- Brand -->
+        <a href="./index.html#home" class="flex items-center gap-3 group">
+          <div class="h-10 w-10 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 grid place-items-center shadow-soft">
+            <span class="text-sm font-bold tracking-tight">ZA</span>
+          </div>
+          <div class="leading-tight">
+            <div class="font-semibold tracking-tight group-hover:opacity-90">Zahradao.cz</div>
+            <div id="uiKicker" class="text-xs text-zinc-600 dark:text-zinc-400">Produkt</div>
+          </div>
+        </a>
+
+        <!-- Nav -->
+        <nav class="hidden md:flex items-center gap-2">
+          <a href="./index.html#home" class="px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Domů</a>
+          <a href="./katalog.html" class="px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Katalog</a>
+          <a href="./index.html#planner" class="px-3 py-2 rounded-xl text-sm font-medium hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">Průvodce</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2">
+          <button id="btnGarden" class="hidden sm:inline-flex px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Moje zahrada <span id="badgeGarden" class="ml-2 text-xs px-2 py-0.5 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">0</span>
+          </button>
+          <button id="btnCart" class="hidden sm:inline-flex px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Košík <span id="badgeCart" class="ml-2 text-xs px-2 py-0.5 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">0</span>
+          </button>
+          <button id="toggleTheme" class="px-3 py-2 rounded-xl text-sm font-medium border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            Režim: <span id="themeLabel">Světlý</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toasts -->
+  <div id="toastWrap" class="fixed top-20 right-4 z-[999] space-y-2"></div>
+
+  <!-- Overlay (cart / garden) -->
+  <div id="overlay" class="fixed inset-0 z-[998] hidden">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" data-close-overlay></div>
+
+    <!-- Drawer -->
+    <div id="drawer" class="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-white dark:bg-zinc-950 border-l border-zinc-200/70 dark:border-white/10 shadow-2xl translate-x-full transition-transform">
+      <div class="p-5 border-b border-zinc-200/70 dark:border-white/10 flex items-center justify-between">
+        <div>
+          <div id="drawerKicker" class="text-xs text-zinc-600 dark:text-zinc-400">Panel</div>
+          <div id="drawerTitle" class="text-lg font-semibold">Název</div>
+        </div>
+        <button id="btnCloseDrawer" class="px-3 py-2 rounded-xl text-sm font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition" aria-label="Zavřít">
+          Zavřít
+        </button>
+      </div>
+
+      <div id="drawerBody" class="p-5 overflow-auto h-[calc(100%-76px)]"></div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-10">
+
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <a href="./katalog.html" class="text-sm text-zinc-600 dark:text-zinc-400 hover:underline">← Zpět do katalogu</a>
+        <h1 id="uiName" class="mt-2 text-2xl sm:text-4xl font-semibold tracking-tight">Produkt</h1>
+        <div id="uiLatin" class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">—</div>
+      </div>
+      <div class="flex gap-2">
+        <button id="btnAddToGarden" class="px-4 py-3 rounded-2xl font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+          Uložit do zahrady
+        </button>
+        <button id="btnOpenCart" class="px-4 py-3 rounded-2xl font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:opacity-90 transition shadow-soft">
+          Otevřít košík
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-6 grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- Gallery -->
+      <section class="lg:col-span-7">
+        <div class="relative overflow-hidden rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft grain">
+          <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-cyan-400/10"></div>
+          <div class="relative p-5">
+            <div class="aspect-square rounded-[1.75rem] border border-zinc-200/70 dark:border-white/10 bg-gradient-to-br from-zinc-900/5 to-emerald-500/10 dark:from-white/5 dark:to-emerald-500/10 flex items-center justify-center">
+              <div class="text-sm text-zinc-600 dark:text-zinc-400">HERO foto (demo)</div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-4 gap-3">
+              <div class="aspect-square rounded-xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5"></div>
+              <div class="aspect-square rounded-xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5"></div>
+              <div class="aspect-square rounded-xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5"></div>
+              <div class="aspect-square rounded-xl border border-zinc-200/70 dark:border-white/10 bg-zinc-900/5 dark:bg-white/5"></div>
+            </div>
+
+            <div class="mt-4 grid sm:grid-cols-3 gap-3">
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Péče</div>
+                <div id="uiCare" class="mt-1 text-sm font-semibold">—</div>
+              </div>
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Stanoviště</div>
+                <div id="uiSite" class="mt-1 text-sm font-semibold">—</div>
+              </div>
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Bezpečnost</div>
+                <div id="uiSafe" class="mt-1 text-sm font-semibold">—</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Buy panel -->
+      <aside class="lg:col-span-5">
+        <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+          <div class="p-5 border-b border-zinc-200/70 dark:border-white/10">
+            <div class="text-sm font-semibold">Vybrat variantu</div>
+            <div id="uiTagline" class="mt-1 text-sm text-zinc-700 dark:text-zinc-300">—</div>
+          </div>
+
+          <div class="p-5 space-y-4">
+            <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+              <div class="text-xs text-zinc-600 dark:text-zinc-400">Výška dnes</div>
+              <div id="uiHeightNow" class="mt-1 text-lg font-semibold">—</div>
+              <div id="uiVariants" class="mt-3 flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">
+              <div class="text-sm opacity-85">Cena</div>
+              <div id="uiPrice" class="mt-1 text-3xl font-semibold">—</div>
+              <div id="uiStock" class="mt-2 text-xs opacity-80">—</div>
+              <button id="btnAddToCart" class="mt-4 w-full px-4 py-3 rounded-2xl font-semibold bg-white text-zinc-950 hover:opacity-90 dark:bg-zinc-950 dark:text-zinc-50 transition">Přidat do košíku</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Růst</div>
+                <div id="uiGrowth" class="mt-1 text-sm font-semibold">—</div>
+              </div>
+              <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Kategorie</div>
+                <div id="uiCategory" class="mt-1 text-sm font-semibold">—</div>
+              </div>
+            </div>
+
+            <div class="text-xs text-zinc-600 dark:text-zinc-400">Tip: URL je dynamická → <code class="px-1 py-0.5 rounded bg-zinc-900/10 dark:bg-white/10">produkt.html?id=...</code></div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- Description -->
+    <section class="mt-10">
+      <div class="rounded-[2rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl shadow-soft overflow-hidden">
+        <div class="p-6 sm:p-8 border-b border-zinc-200/70 dark:border-white/10">
+          <div class="text-sm font-semibold">Detailní popis</div>
+          <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">Prototyp — texty se dají později tahat z databáze.</div>
+        </div>
+        <div class="p-6 sm:p-8">
+          <p id="uiDesc" class="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">—</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="mt-10 border-t border-zinc-200/70 dark:border-white/10 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <div class="font-semibold">Zahradao.cz</div>
+          <div class="text-sm text-zinc-600 dark:text-zinc-400">Produkt • Prototyp</div>
+        </div>
+        <div class="text-xs text-zinc-500">© <span id="year"></span> Zahradao.cz</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+    const $ = (s, r=document) => r.querySelector(s);
+
+    // ---- Theme ----
+    const THEME_KEY = "zahradao_theme";
+    const html = document.documentElement;
+    const themeLabel = $("#themeLabel");
+
+    function applyTheme(mode){
+      if (mode === "dark") html.classList.add("dark");
+      else html.classList.remove("dark");
+      if (themeLabel) themeLabel.textContent = (mode === "dark") ? "Tmavý" : "Světlý";
+      localStorage.setItem(THEME_KEY, mode);
+    }
+
+    function initTheme(){
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === "dark" || saved === "light") return applyTheme(saved);
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      applyTheme(prefersDark ? "dark" : "light");
+    }
+
+    $("#toggleTheme")?.addEventListener("click", () => {
+      applyTheme(html.classList.contains("dark") ? "light" : "dark");
+    });
+
+    // ---- Money ----
+    const CZK = new Intl.NumberFormat('cs-CZ');
+    const formatCZK = (n) => CZK.format(Math.round(n)) + " Kč";
+
+    // ---- URL ----
+    function getParam(name){
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    // ---- Toast ----
+    function toast(msg, type="info"){
+      const wrap = $("#toastWrap");
+      if (!wrap) return;
+      const el = document.createElement("div");
+      el.className = "max-w-[320px] p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/80 dark:bg-zinc-950/70 backdrop-blur-xl shadow-soft text-sm";
+      if (type === "success") el.classList.add("ring-1","ring-emerald-500/30");
+      if (type === "danger") el.classList.add("ring-1","ring-rose-500/30");
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => el.classList.add("opacity-0","translate-y-1"), 2200);
+      setTimeout(() => el.remove(), 2600);
+    }
+
+    // ---- Shared storage ----
+    const LS_CART = "zahradao_cart_v1";
+    const LS_GARDEN = "zahradao_garden_v1";
+
+    function readLS(key, fallback){
+      try { return JSON.parse(localStorage.getItem(key) || "") || fallback; } catch { return fallback; }
+    }
+    function writeLS(key, value){
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+    }
+
+    const state = {
+      cart: readLS(LS_CART, []),
+      garden: readLS(LS_GARDEN, []),
+      selectedVariant: "v1",
+      product: null,
+    };
+
+    const sumQty = (items) => items.reduce((a,i)=>a + (i.qty||0), 0);
+
+    function updateBadges(){
+      const bC = $("#badgeCart");
+      const bG = $("#badgeGarden");
+      if (bC) bC.textContent = String(sumQty(state.cart));
+      if (bG) bG.textContent = String(state.garden.length);
+    }
+
+    // ---- Drawer ----
+    const overlay = $("#overlay");
+    const drawer = $("#drawer");
+    const drawerKicker = $("#drawerKicker");
+    const drawerTitle = $("#drawerTitle");
+    const drawerBody = $("#drawerBody");
+
+    function openDrawer(kind){
+      if (!overlay || !drawer) return;
+      overlay.classList.remove("hidden");
+      requestAnimationFrame(() => drawer.classList.remove("translate-x-full"));
+
+      if (kind === "cart") {
+        if (drawerKicker) drawerKicker.textContent = "Nákup";
+        if (drawerTitle) drawerTitle.textContent = "Košík";
+        renderCart();
+      } else {
+        if (drawerKicker) drawerKicker.textContent = "Digitální zahrada";
+        if (drawerTitle) drawerTitle.textContent = "Moje zahrada";
+        renderGarden();
+      }
+    }
+
+    function closeDrawer(){
+      if (!overlay || !drawer) return;
+      drawer.classList.add("translate-x-full");
+      setTimeout(() => overlay.classList.add("hidden"), 180);
+    }
+
+    $("#btnCloseDrawer")?.addEventListener("click", closeDrawer);
+    overlay?.addEventListener("click", (e) => {
+      if (e.target && e.target.matches("[data-close-overlay]")) closeDrawer();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay && !overlay.classList.contains("hidden")) closeDrawer();
+    });
+
+    function renderEmpty(title, subtitle){
+      if (!drawerBody) return;
+      drawerBody.innerHTML = `
+        <div class="p-5 rounded-[1.75rem] border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+          <div class="text-sm font-semibold">${title}</div>
+          <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">${subtitle}</div>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <a class="px-4 py-2 rounded-xl text-sm font-semibold bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:opacity-90 transition" href="./katalog.html">Do katalogu</a>
+            <a class="px-4 py-2 rounded-xl text-sm font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition" href="./index.html#planner">Průvodce</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCart(){
+      if (!drawerBody) return;
+      if (!state.cart.length) return renderEmpty("Košík je prázdný", "Přidej si první strom nebo rostlinu a uvidíš to tady.");
+
+      const itemsHtml = state.cart.map((it, idx) => {
+        const price = it.price ?? 999;
+        const sub = it.variant_label ? `Varianta: ${it.variant_label}` : (it.tagline || "");
+        return `
+          <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-sm font-semibold">${it.name}</div>
+                <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">${sub}</div>
+              </div>
+              <button class="text-xs px-3 py-2 rounded-xl border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition" data-cart-remove="${idx}">Odebrat</button>
+            </div>
+            <div class="mt-3 flex items-center justify-between">
+              <div class="text-sm font-semibold">${formatCZK(price)}</div>
+              <div class="flex items-center gap-2">
+                <button class="px-3 py-2 rounded-xl text-sm font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition" data-cart-dec="${idx}">−</button>
+                <div class="min-w-[2ch] text-center text-sm font-semibold">${it.qty}</div>
+                <button class="px-3 py-2 rounded-xl text-sm font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition" data-cart-inc="${idx}">+</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const total = state.cart.reduce((sum, it) => sum + (it.price ?? 999) * (it.qty || 0), 0);
+
+      drawerBody.innerHTML = `
+        <div class="space-y-3">
+          ${itemsHtml}
+          <div class="p-5 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">
+            <div class="flex items-center justify-between">
+              <div class="text-sm opacity-80">Celkem (demo)</div>
+              <div class="text-lg font-semibold">${formatCZK(total)}</div>
+            </div>
+            <button class="mt-4 w-full px-4 py-3 rounded-2xl font-semibold bg-white text-zinc-950 hover:opacity-90 dark:bg-zinc-950 dark:text-zinc-50 transition" onclick="window.location.href='./kosik.html'">
+              Zobrazit celý košík
+            </button>
+            <button class="mt-3 w-full px-4 py-3 rounded-2xl font-semibold bg-white/15 hover:bg-white/20 border border-white/20 dark:bg-zinc-900 dark:text-white dark:border-zinc-900 dark:hover:opacity-90 transition" id="btnClearCart">
+              Vyprázdnit košík
+            </button>
+          </div>
+        </div>
+      `;
+
+      drawerBody.querySelectorAll("[data-cart-remove]").forEach(btn => btn.addEventListener("click", () => {
+        const i = Number(btn.getAttribute("data-cart-remove"));
+        state.cart.splice(i, 1);
+        writeLS(LS_CART, state.cart);
+        updateBadges();
+        renderCart();
+      }));
+      drawerBody.querySelectorAll("[data-cart-inc]").forEach(btn => btn.addEventListener("click", () => {
+        const i = Number(btn.getAttribute("data-cart-inc"));
+        state.cart[i].qty += 1;
+        writeLS(LS_CART, state.cart);
+        updateBadges();
+        renderCart();
+      }));
+      drawerBody.querySelectorAll("[data-cart-dec]").forEach(btn => btn.addEventListener("click", () => {
+        const i = Number(btn.getAttribute("data-cart-dec"));
+        state.cart[i].qty = Math.max(1, state.cart[i].qty - 1);
+        writeLS(LS_CART, state.cart);
+        updateBadges();
+        renderCart();
+      }));
+      drawerBody.querySelector("#btnClearCart")?.addEventListener("click", () => {
+        state.cart = [];
+        writeLS(LS_CART, state.cart);
+        updateBadges();
+        renderCart();
+        toast("Košík vyprázdněn", "success");
+      });
+    }
+
+    function renderGarden(){
+      if (!drawerBody) return;
+      if (!state.garden.length) return renderEmpty("Digitální zahrada je prázdná", "Ulož si sem rostliny a budeš mít růst, péči a plán na jednom místě.");
+
+      const items = state.garden.map((it, idx) => `
+        <div class="p-4 rounded-2xl border border-zinc-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-sm font-semibold">${it.name}</div>
+              <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">Přidáno: ${new Date(it.ts).toLocaleDateString('cs-CZ')}</div>
+              <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">Status: <span class="font-semibold">Uložené (demo)</span></div>
+            </div>
+            <button class="text-xs px-3 py-2 rounded-xl border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition" data-garden-remove="${idx}">Odebrat</button>
+          </div>
+        </div>
+      `).join("");
+
+      drawerBody.innerHTML = `
+        <div class="space-y-3">
+          ${items}
+          <div class="p-5 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">
+            <div class="text-sm opacity-80">Další krok</div>
+            <div class="mt-1 text-lg font-semibold">Zahradní plán (brzy)</div>
+            <div class="mt-2 text-sm opacity-90">Později: rozmístění, zóny, upozornění, export PDF.</div>
+          </div>
+        </div>
+      `;
+
+      drawerBody.querySelectorAll("[data-garden-remove]").forEach(btn => btn.addEventListener("click", () => {
+        const i = Number(btn.getAttribute("data-garden-remove"));
+        state.garden.splice(i, 1);
+        writeLS(LS_GARDEN, state.garden);
+        updateBadges();
+        renderGarden();
+        toast("Odebráno z digitální zahrady", "success");
+      }));
+    }
+
+    // ---- Product data (single source for now) ----
+    const PRODUCTS = [
+      {
+        id: "carpinus-betulus-columnar",
+        name: "Sloupovitý habr",
+        latin: "Carpinus betulus",
+        category_label: "Stromy",
+        tagline: "Čistý design, předvídatelný růst.",
+        desc: "Sloupovitý habr je ideální volbou pro vytvoření přirozené zelené stěny. Drží tvar, dobře reaguje na střih a působí čistě i v moderní zahradě.",
+        care_label: "Low-care",
+        site_label: "Slunce / polostín",
+        safe_label: "Bezpečné pro děti",
+        growth_label: "5–10 m",
+        variants: {
+          v1: { label: "120–160 cm", height_now: "120–160 cm", price: 1290, stock: 24 },
+          v2: { label: "160–200 cm", height_now: "160–200 cm", price: 1690, stock: 12 },
+          v3: { label: "200+ cm", height_now: "200+ cm", price: 2290, stock: 6 },
+        }
+      },
+      {
+        id: "fagus-sylvatica",
+        name: "Buk lesní",
+        latin: "Fagus sylvatica",
+        category_label: "Stromy",
+        tagline: "Prémiový strom pro klidnou zahradu.",
+        desc: "Buk lesní je elegantní dominanta zahrady. Vypadá čistě, v čase zraje do prémiového vzhledu a hodí se do klidných kompozic.",
+        care_label: "Střední",
+        site_label: "Slunce / polostín",
+        safe_label: "Bezpečné pro děti",
+        growth_label: "10–25 m",
+        variants: {
+          v1: { label: "120–160 cm", height_now: "120–160 cm", price: 1490, stock: 10 },
+          v2: { label: "160–200 cm", height_now: "160–200 cm", price: 1990, stock: 6 },
+          v3: { label: "200+ cm", height_now: "200+ cm", price: 2690, stock: 3 },
+        }
+      },
+      {
+        id: "fagus-sylvatica-purpurea",
+        name: "Buk červenolistý",
+        latin: "Fagus sylvatica 'Purpurea'",
+        category_label: "Stromy",
+        tagline: "Barva, která dělá luxus.",
+        desc: "Červenolistý buk je designová ikona. Pokud chceš efekt bez kýče, tohle je jedna z nejbezpečnějších cest.",
+        care_label: "Střední",
+        site_label: "Slunce / polostín",
+        safe_label: "Bezpečné pro děti",
+        growth_label: "10–25 m",
+        variants: {
+          v1: { label: "120–160 cm", height_now: "120–160 cm", price: 1890, stock: 8 },
+          v2: { label: "160–200 cm", height_now: "160–200 cm", price: 2490, stock: 4 },
+          v3: { label: "200+ cm", height_now: "200+ cm", price: 3390, stock: 2 },
+        }
+      }
+    ];
+
+    const findProduct = (id) => PRODUCTS.find(p => p.id === id) || null;
+
+    function renderNotFound(){
+      $("#uiName").textContent = "Produkt nenalezen";
+      $("#uiLatin").textContent = "Zkontroluj odkaz z katalogu.";
+      $("#uiTagline").textContent = "";
+      $("#uiDesc").textContent = "Tento produkt v prototypu neexistuje. Vrať se do katalogu a vyber jiný.";
+      $("#uiVariants").innerHTML = "";
+      $("#uiPrice").textContent = "—";
+      $("#uiStock").textContent = "—";
+      $("#uiHeightNow").textContent = "—";
+      $("#btnAddToCart").disabled = true;
+      $("#btnAddToCart").classList.add("opacity-50","cursor-not-allowed");
+    }
+
+    function setVariantActive(key){
+      state.selectedVariant = key;
+      const v = state.product.variants[key];
+
+      $$(".variantBtn").forEach(b => {
+        const on = b.getAttribute('data-variant') === key;
+        b.classList.toggle('bg-zinc-900', on);
+        b.classList.toggle('text-white', on);
+        b.classList.toggle('dark:bg-white', on);
+        b.classList.toggle('dark:text-zinc-950', on);
+      });
+
+      $("#uiHeightNow").textContent = v.height_now;
+      $("#uiPrice").textContent = formatCZK(v.price);
+      $("#uiStock").textContent = "Skladem: " + v.stock + " ks";
+      document.title = "Zahradao.cz — " + state.product.name;
+    }
+
+    function renderProduct(p){
+      state.product = p;
+
+      $("#uiName").textContent = p.name;
+      $("#uiLatin").textContent = p.latin;
+      $("#uiTagline").textContent = p.tagline;
+      $("#uiDesc").textContent = p.desc;
+
+      $("#uiCare").textContent = p.care_label;
+      $("#uiSite").textContent = p.site_label;
+      $("#uiSafe").textContent = p.safe_label;
+
+      $("#uiGrowth").textContent = p.growth_label;
+      $("#uiCategory").textContent = p.category_label;
+
+      const wrap = $("#uiVariants");
+      wrap.innerHTML = Object.entries(p.variants).map(([k, v]) => {
+        return `
+          <button data-variant="${k}" class="variantBtn px-3 py-2 rounded-xl text-sm font-semibold border border-zinc-200/70 dark:border-white/10 hover:bg-zinc-900/5 dark:hover:bg-white/10 transition">
+            ${v.label}
+          </button>
+        `;
+      }).join('');
+
+      $$(".variantBtn").forEach(btn => btn.addEventListener('click', () => {
+        const k = btn.getAttribute('data-variant');
+        if (!k || !p.variants[k]) return;
+        setVariantActive(k);
+      }));
+
+      setVariantActive(p.variants.v1 ? 'v1' : Object.keys(p.variants)[0]);
+    }
+
+    function addToGarden(){
+      if (!state.product) return;
+      const exists = state.garden.some(x => x.id === state.product.id);
+      if (!exists) {
+        state.garden.unshift({ id: state.product.id, name: state.product.name, ts: Date.now() });
+        writeLS(LS_GARDEN, state.garden);
+        updateBadges();
+        toast("Přidáno do digitální zahrady", "success");
+      } else {
+        toast("Už to máš v digitální zahradě", "info");
+      }
+      openDrawer('garden');
+    }
+
+    function addToCart(){
+      if (!state.product) return;
+      const k = state.selectedVariant || 'v1';
+      const v = state.product.variants[k];
+      const key = state.product.id + "__" + k;
+
+      const found = state.cart.find(x => x.key === key);
+      if (found) found.qty += 1;
+      else state.cart.push({
+        key,
+        id: state.product.id,
+        name: state.product.name,
+        variant: k,
+        variant_label: v.label,
+        price: v.price,
+        qty: 1,
+      });
+
+      writeLS(LS_CART, state.cart);
+      updateBadges();
+      toast("Přidáno do košíku", "success");
+    }
+
+    function init(){
+      $("#year").textContent = String(new Date().getFullYear());
+      initTheme();
+      updateBadges();
+
+      $("#btnCart")?.addEventListener('click', () => window.location.href = './kosik.html');
+      $("#btnGarden")?.addEventListener('click', () => openDrawer('garden'));
+      $("#btnOpenCart")?.addEventListener('click', () => window.location.href = './kosik.html');
+
+      $("#btnAddToGarden")?.addEventListener('click', addToGarden);
+      $("#btnAddToCart")?.addEventListener('click', () => { addToCart(); });
+
+      const id = getParam('id') || 'carpinus-betulus-columnar';
+      const p = findProduct(id);
+      if (!p) return renderNotFound();
+      renderProduct(p);
+      $("#uiKicker").textContent = "Produkt • " + p.category_label;
+    }
+
+    init();
+  </script>
+</body>
+</html>
